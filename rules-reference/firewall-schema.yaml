@@ -1,0 +1,71 @@
+# firewall-schema.yaml
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Serverless Workflow Firewall Language"
+description: "A minimal workflow firewall language"
+type: object
+required: [firewall]
+properties:
+  firewall:
+    type: object
+    required: [request, response]
+    properties:
+      request:
+        type: object
+        required: [default-action, rules]
+        properties:
+          default-action:
+            type: string
+            enum: ["drop", "accept", "reject"]
+          rules:
+            type: array
+            items:
+              type: object
+              required: [body]       # other request components can be added later
+              properties:
+                body:
+                  $ref: "#/$defs/bodyRules"
+      response:
+        type: object
+        required: [default-action, rules]
+        properties:
+          default-action:
+            type: string
+            enum: ["drop", "accept", "reject"]
+          rules:
+            type: array
+            items:
+              type: object
+              required: [body]       # other request components can be added later
+              properties:
+                body:
+                  $ref: "#/$defs/bodyRules"
+
+$defs:
+  bodyRules:
+    type: object
+    required: [type, action, expression]
+    properties:
+      type:
+        type: string
+        enum: ["application/json"]      # can have others in the future, for example application/xml, multipart/form-data, application/x-www-form-urlencoded (the content-type will be verified against this value)
+      action:
+        type: string
+        enum: ["drop", "accept", "reject", "log"]
+      expression:
+        type: string       #for json bodies, the expression will be a jq expression that must be evaluated to true or false (if true, it will trigger the defined actions)
+    allOf:
+      - if: 
+          properties:
+            type: "application/json"
+        then: 
+          properties:
+            schema:
+              type: object
+              required: [type, path]
+              properties:
+                type:
+                  type: string
+                  enum: [json, yaml]      # wether the schema is a json or yaml schema
+                path:
+                  type: string            # the path to the schema file
+additionalProperties: false
