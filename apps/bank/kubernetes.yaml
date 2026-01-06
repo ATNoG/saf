@@ -1,0 +1,174 @@
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: bank-app
+# ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bank-app-secret
+  namespace: bank-app
+type: Opaque
+data:
+  directus_api_token: R1R1UFJjX1lXazctdmZrRkZzUlBEcENTU1NfY3BseVY=
+  jwt_key: dmVyeV9zZWNyZXRfa2V5
+  otp_secret: MTIzNDU2
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bank-app-configmap
+  namespace: bank-app
+data:
+  directus_url: http://directus.directus:8055
+  max_amount: "1000"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: entry-point
+  namespace: bank-app
+spec:
+  template: 
+    metadata:
+      annotations:
+        qpoption.knative.dev/flow-activate: enable
+    spec:
+      containers:
+        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/entry-point
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: login
+  namespace: bank-app
+spec:
+  template: 
+    metadata:
+      annotations:
+        # features.knative.dev/queueproxy-podinfo: enabled
+        qpoption.knative.dev/flow-activate: enable
+    spec:
+      containers:
+        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/login
+          env:
+            - name: DIRECTUS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: bank-app-configmap
+                  key: directus_url
+            - name: DIRECTUS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bank-app-secret
+                  key: directus_api_token
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bank-app-secret
+                  key: jwt_key
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: authorization
+  namespace: bank-app
+  # labels: 
+  #   networking.knative.dev/visibility: cluster-local
+spec:
+  template: 
+    spec:
+      containers:
+        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/authorization
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bank-app-secret
+                  key: jwt_key
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: verify-transaction
+  namespace: bank-app
+spec:
+  template: 
+    spec:
+      containers:
+        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/verify-transaction
+          env:
+            - name: DIRECTUS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: bank-app-configmap
+                  key: directus_url
+            - name: DIRECTUS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bank-app-secret
+                  key: directus_api_token
+            - name: OTP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: bank-app-secret
+                  key: otp_secret
+            - name: MAX_AMOUNT
+              valueFrom:
+                configMapKeyRef:
+                  name: bank-app-configmap
+                  key: max_amount
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: transaction
+  namespace: bank-app
+spec:
+  template: 
+    spec:
+      containers:
+        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/transaction
+          env:
+            - name: DIRECTUS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: bank-app-configmap
+                  key: directus_url
+            - name: DIRECTUS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bank-app-secret
+                  key: directus_api_token
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: result
+  namespace: bank-app
+  # labels: 
+  #   networking.knative.dev/visibility: cluster-local
+spec:
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/result
+---
+apiVersion: sources.knative.dev/v1
+kind: SinkBinding
+metadata:
+  generation: 1
+  name: bind-entry-point
+  namespace: bank-app
+spec:
+  sink: 
+    ref:
+      apiVersion: eventing.knative.dev/v1
+      kind: Broker
+      name: broker
+      namespace: bank-app
+  subject:
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    name: entry-point
+    namespace: bank-app

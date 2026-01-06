@@ -7,7 +7,7 @@ required: [firewall]
 properties:
   firewall:
     type: object
-    required: [request, response]
+    # required: [request, response]
     properties:
       request:
         type: object
@@ -43,7 +43,7 @@ properties:
 $defs:
   bodyRules:
     type: object
-    required: [type, action, expression]
+    # required: [type, action, expression]
     properties:
       type:
         type: string
@@ -56,7 +56,8 @@ $defs:
     allOf:
       - if: 
           properties:
-            type: "application/json"
+            type:
+              enum: ["application/json"]
         then: 
           properties:
             schema:
@@ -68,4 +69,14 @@ $defs:
                   enum: [json, yaml]      # wether the schema is a json or yaml schema
                 path:
                   type: string            # the path to the schema file
+
+      # Case 1: schema is present → only type + action required
+      - if:
+          required: [schema]
+        then:
+          required: [type, action]
+        else:
+          # Case 2: schema is NOT present → expression is required
+          required: [type, action, expression]
+
 additionalProperties: false

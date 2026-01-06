@@ -1,0 +1,282 @@
+id: workflow-bank
+name: workflow-bank
+version: '0.1.0'
+specVersion: '0.8'
+description: Banking App
+start: entry-event
+
+events:
+  - name: triggerEvent
+    type: http.request.received
+    source: http-event-sources
+    kind: consumed
+
+functions:
+  - name: authorization
+    type: custom
+    operation: knative:services.v1.serving.knative.dev/authorization?method=POST
+    metadata:
+      firewall:
+        request:
+          default-action: accept
+          rules:
+            # Required fields
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .client? | type == "string" | not
+            # Catch malicious data in fields
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .?
+                  | tostring
+                  | test("(?i)(union\\s+select|select\\s+.*from|{{|}}|{%-|-%}|__class__|__mro__|__subclasses__)")
+
+        response:
+          default-action: accept
+          rules:
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .error? | type == "string" and test("(?i)(stacktrace|exception|traceback)")
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .message? | test("Access denied|Invalid token")
+
+  - name: verify-transaction
+    type: custom
+    operation: knative:services.v1.serving.knative.dev/verify-transaction?method=POST
+    metadata:
+      firewall:
+        request:
+          default-action: accept
+          rules:
+            # amount must be numeric and non-negative
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .amount?
+                  | type == "number"
+                  and (. >= 0) | not
+
+            # OTP must be a string/number if present
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .otp?
+                  | (type == "string") | not
+
+            # client and destination_client must be strings
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .client? | type == "string" | not
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .destination_client? | type == "string" | not
+        response:
+          default-action: accept
+          rules:
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .error? | type == "string" and test("(?i)(stacktrace|exception|traceback)")
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .amount? | type == "number" and (. < 0)
+  - name: transaction
+    type: custom
+    operation: knative:services.v1.serving.knative.dev/transaction?method=POST
+    metadata:
+      firewall:
+        request:
+          default-action: accept
+          rules:
+            # 'from' and 'to' must be strings
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .from? | type == "string" | not
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .to? | type == "string" | not
+
+            # amount must be numeric and non-negative
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .amount? | type == "number" and (. >= 0) | not
+            
+            # ---------- SQLi / template injection catch-all ----------
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .? | tostring | test("(?i)(union\\s+select|select\\s+.*from|{{|}}|{%-|-%}|__class__|__mro__|__subclasses__|eval\\(|document\\.cookie)") 
+        response:
+          default-action: accept
+          rules:
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .error? | type == "string" and test("(?i)(stacktrace|exception|traceback)")
+  - name: result
+    type: custom
+    operation: knative:services.v1.serving.knative.dev/result?method=POST
+    metadata:
+      firewall:
+        request:
+          default-action: accept
+          rules:
+            # reject responses with error content (malicious leakage)
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .error? | type == "string" and test("(?i)(stacktrace|exception|traceback)")
+        response:
+          default-action: accept
+          rules:
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .error? | type == "string" and test("(?i)(stacktrace|exception|traceback)")
+  - name: process-event
+    type: expression
+    operation: |
+      {
+        transformed: (
+          (
+            .headers
+            | to_entries
+            | map(select(.key | ascii_downcase != "host"))
+            | map({("HEADER_" + .key): .value})
+            | add
+          ) + .data
+        )
+      }
+
+states:
+  - name: entry-event
+    type: event
+    onEvents:
+      - eventRefs:
+          - triggerEvent
+        actions:
+        - functionRef:
+            refName: process-event
+    stateDataFilter:
+      output: "${ .transformed }"
+    transition: authorization
+
+  - name: authorization
+    type: operation
+    actions:
+      - functionRef:
+          refName: authorization
+        actionDataFilter:
+          toStateData: ._result
+    stateDataFilter:
+      output: ._result
+    # stateDataFilter:
+    #   output: |
+    #     ${
+    #       (
+    #         $WORKFLOW.responseHeaders
+    #         | to_entries
+    #         | map({("HEADER_" + .key): .value})
+    #         | add
+    #       ) + .
+    #     }
+    transition: authorization-decide
+
+  - name: authorization-decide
+    type: switch
+    dataConditions:
+      - condition: ${ ."do-verification" == true }
+        transition: verify-transaction
+      # - condition: "${ .do-verification == false or .STATUS_CODE != null and (.STATUS_CODE < 200 or .STATUS_CODE >= 300) }"
+      #   transition: result
+    defaultCondition:
+      # end: true
+      transition: result
+
+  - name: verify-transaction
+    type: operation
+    actions:
+      - functionRef:
+          refName: verify-transaction
+        actionDataFilter:
+          toStateData: ._result
+    stateDataFilter:
+      output: ._result
+    # stateDataFilter:
+    #   output: |
+    #     ${
+    #       (
+    #         $WORKFLOW.responseHeaders
+    #         | to_entries
+    #         | map({("HEADER_" + .key): .value})
+    #         | add
+    #       ) + .
+    #     }
+    transition: verify-transaction-decide
+
+  - name: verify-transaction-decide
+    type: switch
+    dataConditions:
+      - condition: ${ ."do-transaction" == true }
+        transition: transaction
+      # - condition: "${ .do-transaction == false or .STATUS_CODE != null and (.STATUS_CODE < 200 or .STATUS_CODE >= 300) }"
+      #   transition: result
+    defaultCondition:
+      # end: true
+      transition: result
+
+  - name: transaction
+    type: operation
+    actions:
+      - functionRef:
+          refName: transaction
+        actionDataFilter:
+          toStateData: ._result
+    stateDataFilter:
+      output: ._result
+    # stateDataFilter:
+    #   output: |
+    #     ${
+    #       (
+    #         $WORKFLOW.responseHeaders
+    #         | to_entries
+    #         | map({("HEADER_" + .key): .value})
+    #         | add
+    #       ) + .
+    #     }
+    transition: result
+  
+  - name: result
+    type: operation
+    actions:
+      - functionRef:
+          refName: result
+    end: true

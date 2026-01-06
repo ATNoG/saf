@@ -1,0 +1,51 @@
+firewall:
+  request:
+    default-action: accept
+    rules:
+      # 1. SQL injection primitives
+      - body:
+          type: application/json
+          action: reject
+          expression: |
+            .?
+            | tostring
+            | test("(?i)(union\\s+select|select\\s+.+from|or\\s+1=1|--|;|/\\*)")
+
+      # 2. Jinja / template injection
+      - body:
+          type: application/json
+          action: reject
+          expression: |
+            .?
+            | tostring
+            | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+
+      # 3. JavaScript / expression injection
+      - body:
+          type: application/json
+          action: reject
+          expression: |
+            .?
+            | tostring
+            | test("(?i)(eval\\(|new\\s+Function|document\\.cookie)")
+
+      # 4. Suspicious SQL metacharacters in strings
+      - body:
+          type: application/json
+          action: drop
+          expression: |
+            .?
+            | tostring
+            | test("[;'\"\\\\]")
+
+  response:
+    default-action: accept
+    rules:
+      # Block error leakage
+      - body:
+          type: application/json
+          action: drop
+          expression: |
+            .error?
+            | type == "string"
+            and test("(?i)(stacktrace|exception|traceback)")
