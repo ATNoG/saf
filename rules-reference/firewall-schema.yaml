@@ -34,11 +34,11 @@ $defs:
             expression:
               type: string       #for json bodies, the expression will be a jq expression that must be evaluated to true or false (if true, it will trigger the defined actions)
           allOf:
-            - if: 
-                properties:
-                  type:
-                    enum: ["application/json"]
-              then: 
+            # Case 1: schema is present → only type + action required
+            - if:
+                required: [schema]
+              then:
+                required: [type, action, expression]
                 properties:
                   schema:
                     type: object
@@ -49,12 +49,6 @@ $defs:
                         enum: [json, yaml]      # wether the schema is a json or yaml schema
                       path:
                         type: string            # the path to the schema file
-
-            # Case 1: schema is present → only type + action required
-            - if:
-                required: [schema]
-              then:
-                required: [type, action, expression]
               else:
                 # Case 2: schema is NOT present → expression is required
                 required: [action, expression]

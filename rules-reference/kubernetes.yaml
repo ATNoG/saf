@@ -40,25 +40,23 @@ spec:
       annotations:
         qpoption.knative.dev/flow-activate: enable
         qpoption.knative.dev/firewall-config-rules: '{"request": {"default-action":
-          "accept", "rules": [{"type": "application/json", "action": "drop", "expression":
-          "(.REQUEST.BODY.username? | not) or (.BODY.password? | not)\n"}, {"type":
-          "application/json", "action": "drop", "expression": ".REQUEST.BODY.username?\n|
-          (type != \"string\"\n  or length < 3\n  or length > 64\n  or test(\"^[a-zA-Z0-9._-]+$\")
-          | not)\n"}, {"type": "application/json", "action": "drop", "expression":
+          "accept", "rules": [{"action": "drop", "expression": "(.REQUEST.BODY.username?
+          | not) or (.REQUEST.BODY.password? | not)\n"}, {"action": "drop", "expression":
+          ".REQUEST.BODY.username?\n| (type != \"string\"\n  or length < 3\n  or length
+          > 64\n  or test(\"^[a-zA-Z0-9._-]+$\") | not)\n"}, {"action": "drop", "expression":
           ".REQUEST.BODY.password?\n| (type != \"string\"\nor length < 8\nor length
-          > 128)\n"}, {"type": "application/json", "action": "drop", "expression":
-          ".REQUEST.BODY.username?\n| test(\"(?i)(union\\\\s+select|select\\\\s+.*from|or\\\\s+1=1|--|;|/\\\\*)\")\n"},
-          {"type": "application/json", "action": "drop", "expression": "([.REQUEST.BODY.username?,
-          .REQUEST.BODY.password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"},
-          {"type": "application/json", "action": "drop", "expression": "([.REQUEST.BODY.username?,
-          .REQUEST.BODY.password?]\n| map(tostring)\n| join(\"\"))\n| test(\"[\\\\x00-\\\\x08\\\\x0B\\\\x0C\\\\x0E-\\\\x1F]\")\n"},
-          {"type": "application/json", "action": "drop", "expression": "([.REQUEST.BODY.username?]\n|
-          map(tostring)\n| join(\"\"))\n| test(\"admin\")\n"}]}, "response": {"default-action":
-          "accept", "rules": [{"type": "application/json", "action": "drop", "expression":
-          ".RESPONSE.BODY.error?\n| type == \"string\"\nand test(\"(?i)(stacktrace|exception|traceback|sql|directus)\")\n"},
-          {"type": "application/json", "action": "drop", "expression": ".RESPONSE.BODY.password?
-          | not | not\n"}, {"type": "application/json", "action": "drop", "expression":
-          ".RESPONSE.BODY.token? or .jwt? or .access_token?\n"}]}}'
+          > 128)\n"}, {"action": "drop", "expression": ".REQUEST.BODY.username?\n|
+          test(\"(?i)(union\\\\s+select|select\\\\s+.*from|or\\\\s+1=1|--|;|/\\\\*)\")\n"},
+          {"action": "drop", "expression": "([.REQUEST.BODY.username?, .REQUEST.BODY.password?]
+          | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"},
+          {"action": "drop", "expression": "([.REQUEST.BODY.username?, .REQUEST.BODY.password?]\n|
+          map(tostring)\n| join(\"\"))\n| test(\"[\\\\x00-\\\\x08\\\\x0B\\\\x0C\\\\x0E-\\\\x1F]\")\n"},
+          {"action": "drop", "expression": "([.REQUEST.BODY.username?]\n| map(tostring)\n|
+          join(\"\"))\n| test(\"admin\")\n"}]}, "response": {"default-action": "accept",
+          "rules": [{"action": "drop", "expression": ".RESPONSE.BODY.error?\n| type
+          == \"string\"\nand test(\"(?i)(stacktrace|exception|traceback|sql|directus)\")\n"},
+          {"action": "drop", "expression": ".RESPONSE.BODY.password? | not | not\n"},
+          {"action": "drop", "expression": ".RESPONSE.BODY.token? or .jwt? or .access_token?\n"}]}}'
         qpoption.knative.dev/firewall-activate: enable
     spec:
       containers:
