@@ -18,15 +18,10 @@ import (
 )
 
 const version string = "0.0.1"
-const name string = "flow"
+const name string = "firewall"
 
 var annotationsFilePath = sharedmain.PodInfoAnnotationsPath
 var qpOptionPrefix = "qpoption.knative.dev/"
-
-const (
-	functionType = "function"
-	eventType = "event"
-)
 
 type plug struct {
 	name    		string
@@ -58,10 +53,10 @@ func (p *plug) ApproveRequest(req *http.Request) (*http.Request, error) {
 	)
 	if err != nil {
 		pi.Log.Errorf("%v", err)
-		return nil, errRequest
+		return nil, errors.New("Request blocked by firewall: " + err.Error())
 	}
 
-	if err := applyAction(action); err != nil {
+	if err := applyAction(action, errResponse); err != nil {
 		return nil, err
 	}
 
@@ -88,10 +83,10 @@ func (p *plug) ApproveResponse(
 	)
 	if err != nil {
 		pi.Log.Errorf("%v", err)
-		return nil, errResponse
+		return nil, errors.New("Request blocked by firewall: " + err.Error())
 	}
 
-	if err := applyAction(action); err != nil {
+	if err := applyAction(action, errResponse); err != nil {
 		return nil, err
 	}
 
@@ -125,15 +120,15 @@ func evaluateJSONFirewall(
 	return action, nil
 }
 
-func applyAction(action Action) error {
+func applyAction(action Action, err error) error {
 	switch action {
 		case ActionAccept:
 			return nil
 		// TODO -> IN THE FUTURE, THE BEHAVIOR OF DROP MUST BE CHANGED TO A REAL DROP (SILENT REJECT). HOWEVER, THIS NEEDS DEEPER MODIFICATIONS IN THE QUEUE-PROXY ITSELF AND PROBABLY IN THE SECURITY GUARD EXTENSION
 		case ActionDrop:
-			return errRequest
+			return err
 		case ActionReject:
-			return errRequest
+			return err
 		default:
 			return fmt.Errorf("unknown action: %s", action)
 	}
@@ -166,12 +161,18 @@ func (p *plug) ProcessAnnotations() bool {
 	file, err := os.Open(annotationsFilePath)
 	if err != nil {
 		pi.Log.Errorf("File %s cannot be opened - is PodInfo mounted? os.Open Error: %s", annotationsFilePath, err.Error())
+		fmt.Printf("File %s cannot be opened - is PodInfo mounted? os.Open Error: %s\n", annotationsFilePath, err.Error())
 		return false
 	}
 	defer file.Close()
 	config := make(map[string]string)
 
 	scanner := bufio.NewScanner(file)
+
+	// To support very big instructions (configs up to 1MB)
+	buf := make([]byte, 0, 64*1024)
+	scanner.Buffer(buf, 1024*1024)
+
 	for scanner.Scan() {
 		txt := scanner.Text()
 		txt = strings.ToLower(txt)
@@ -206,6 +207,7 @@ func (p *plug) ProcessAnnotations() bool {
 	}
 	if err := scanner.Err(); err != nil {
 		pi.Log.Errorf("File %s - scanner Error %s", annotationsFilePath, err.Error())
+		fmt.Printf("File %s - scanner Error %s\n", annotationsFilePath, err.Error())
 		return false
 	}
 
@@ -213,11 +215,13 @@ func (p *plug) ProcessAnnotations() bool {
 	raw, ok := config["rules"]
 	if !ok {
 		pi.Log.Errorf("Key rules not found in config")
+		fmt.Printf("Key rules not found in config\n")
 		return false
 	}
 	unescaped, err := strconv.Unquote("\"" + raw + "\"")
 	if err != nil {
 		pi.Log.Errorf("Failed to unescape JSON: %v", err)
+		fmt.Printf("Failed to unescape JSON: %v\n", err)
 		return false
 	}
 
@@ -228,13 +232,18 @@ func (p *plug) ProcessAnnotations() bool {
 
 	if err := decoder.Decode(&firewall); err != nil {
 		pi.Log.Errorf("Invalid firewall rules JSON: %v", err)
+		fmt.Printf("Failed to unescape JSON: %v\n", err)
 		return false
 	}
 
 	if err := firewall.Validate(); err != nil {
 		pi.Log.Errorf("Firewall rules validation failed: %v", err)
+		fmt.Printf("Firewall rules validation failed: %v\n", err)
 		return false
 	}
+
+	p.RequestRules = *firewall.Request
+	p.ResponseRules = *firewall.Response
 
 	return true
 }
@@ -245,15 +254,23 @@ func init() {
 		name:    name,
 	}
 
-	fName := os.Getenv("SERVING_SERVICE")
-	if fName == "" {
-		pi.Log.Errorf("Could not retrieve function name")
-		return
-	}
-
 	if !p.ProcessAnnotations() {
 		pi.Log.Errorf("Error reading the Pod annotations")
 		return
+	}
+
+	prettyRequest, err := json.MarshalIndent(p.RequestRules, "", "  ")
+	if err != nil {
+		pi.Log.Errorf("Failed to marshal request rules structure: %v", err)
+	} else {
+		pi.Log.Debugf("Request rules structure:\n%s\n", string(prettyRequest))
+	}
+
+	prettyResponse, err := json.MarshalIndent(p.ResponseRules, "", "  ")
+	if err != nil {
+		pi.Log.Errorf("Failed to marshal response rules structure: %v", err)
+	} else {
+		pi.Log.Debugf("Response rules structure:\n%s\n", string(prettyResponse))
 	}
 
 	pi.RegisterPlug(p)

@@ -12,6 +12,2103 @@ events:
     kind: consumed
 
 functions:
+  - name: login
+    type: custom
+    operation: knative:services.v1.serving.knative.dev/login?method=POST
+    metadata:
+      firewall:
+        request:
+          default-action: accept
+          rules:
+
+            # 1. Required fields must exist
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  (.username? | not) or (.password? | not)
+
+            # 2. Username must be a safe string
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .username?
+                  | (type != "string"
+                    or length < 3
+                    or length > 64
+                    or test("^[a-zA-Z0-9._-]+$") | not)
+
+            # 3. Password must be a string with sane size limits
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .password?
+                  | (type != "string"
+                    or length < 8
+                    or length > 128)
+
+            # 4. SQL injection detection (username is interpolated into query)
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .username?
+                  | test("(?i)(union\\s+select|select\\s+.*from|or\\s+1=1|--|;|/\\*)")
+
+            # 5. Template / code injection detection
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+
+            # 6. Control characters / binary payloads
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  ([.username?, .password?]
+                  | map(tostring)
+                  | join(""))
+                  | test("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: ([.username?, .password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  ([.username?]
+                  | map(tostring)
+                  | join(""))
+                  | test("admin")
+
+
+        response:
+          default-action: accept
+          rules:
+
+            # 7. No stack traces or internal errors
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .error?
+                  | type == "string"
+                  and test("(?i)(stacktrace|exception|traceback|sql|directus)")
+
+            # 8. Password must never appear in response
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .password? | not | not
+
+            # 9. JWT must not be returned in the body
+            - body:
+                type: application/json
+                action: drop
+                expression: |
+                  .token? or .jwt? or .access_token?
   - name: authorization
     type: custom
     operation: knative:services.v1.serving.knative.dev/authorization?method=POST
@@ -48,7 +2145,6 @@ functions:
                 action: drop
                 expression: |
                   .message? | test("Access denied|Invalid token")
-
   - name: verify-transaction
     type: custom
     operation: knative:services.v1.serving.knative.dev/verify-transaction?method=POST

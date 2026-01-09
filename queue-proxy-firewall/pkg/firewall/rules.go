@@ -31,6 +31,9 @@ import (
 
 func evaluateRules(dir Direction, body interface{}) (Action, error) {
 	for i, rule := range dir.Rules {
+		pi.Log.Debugf("Checking rule expression: %s", rule.Body.Expression)
+		// fmt.Printf("Checking rule expression: %s\n", rule.Body.Expression)
+
 		if rule.Body == nil {
 			continue
 		}
@@ -73,6 +76,11 @@ func evaluateBodyRule(rule *BodyRule, body interface{}) (bool, error) {
 
 	iter := query.Run(body)
 
+	var (
+		result    bool
+		hasResult bool
+	)
+
 	for {
 		v, ok := iter.Next()
 		if !ok {
@@ -83,16 +91,24 @@ func evaluateBodyRule(rule *BodyRule, body interface{}) (bool, error) {
 			return false, err
 		}
 
-		// jq expressions must evaluate to boolean
 		b, ok := v.(bool)
 		if !ok {
 			return false, fmt.Errorf("jq expression did not return boolean")
 		}
 
-		return b, nil
+		if hasResult {
+			return false, fmt.Errorf("jq expression returned multiple values")
+		}
+
+		result = b
+		hasResult = true
 	}
 
-	return false, nil
+	if !hasResult {
+		return false, fmt.Errorf("jq expression returned no result")
+	}
+
+	return result, nil
 }
 
 func logRuleHit(rule *BodyRule, body interface{}) {

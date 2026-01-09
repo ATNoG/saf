@@ -34,8 +34,8 @@ def main():
                         config["spec"]["template"]["metadata"] = {}
                     if "annotations" not in config["spec"]["template"]["metadata"]:
                         config["spec"]["template"]["metadata"]["annotations"] = {}
-                    config["spec"]["template"]["metadata"]["annotations"]["qpoption.knative.dev/qpoption.knative.dev/firewall-config-rules"] = json.dumps(functions_rules[function])
-                    config["spec"]["template"]["metadata"]["annotations"]["qpoption.knative.dev/qpoption.knative.dev/firewall-activate"] = "enable"
+                    config["spec"]["template"]["metadata"]["annotations"]["qpoption.knative.dev/firewall-config-rules"] = json.dumps(functions_rules[function])
+                    config["spec"]["template"]["metadata"]["annotations"]["qpoption.knative.dev/firewall-activate"] = "enable"
     
     with open("kubernetes.yaml", "w") as f:
         yaml.safe_dump_all(kubernetes, f, sort_keys=False)
