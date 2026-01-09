@@ -10,73 +10,53 @@ properties:
     # required: [request, response]
     properties:
       request:
-        type: object
-        required: [default-action, rules]
-        properties:
-          default-action:
-            type: string
-            enum: ["drop", "accept", "reject"]
-          rules:
-            type: array
-            items:
-              type: object
-              required: [body]       # other request components can be added later
-              properties:
-                body:
-                  $ref: "#/$defs/bodyRules"
+        $ref: "#/$defs/rules"
       response:
-        type: object
-        required: [default-action, rules]
-        properties:
-          default-action:
-            type: string
-            enum: ["drop", "accept", "reject"]
-          rules:
-            type: array
-            items:
-              type: object
-              required: [body]       # other request components can be added later
-              properties: 
-                body:
-                  $ref: "#/$defs/bodyRules"
+        $ref: "#/$defs/rules"
 
 $defs:
-  bodyRules:
+  rules:
     type: object
-    # required: [type, action, expression]
+    required: [default-action, rules]
     properties:
-      type:
+      default-action:
         type: string
-        enum: ["application/json"]      # can have others in the future, for example application/xml, multipart/form-data, application/x-www-form-urlencoded (the content-type will be verified against this value)
-      action:
-        type: string
-        enum: ["drop", "accept", "reject", "log"]
-      expression:
-        type: string       #for json bodies, the expression will be a jq expression that must be evaluated to true or false (if true, it will trigger the defined actions)
-    allOf:
-      - if: 
+        enum: ["drop", "accept", "reject"]
+      rules:
+        type: array
+        items:
+          type: object
+          # required: [type, action, expression]
           properties:
-            type:
-              enum: ["application/json"]
-        then: 
-          properties:
-            schema:
-              type: object
-              required: [type, path]
-              properties:
-                type:
-                  type: string
-                  enum: [json, yaml]      # wether the schema is a json or yaml schema
-                path:
-                  type: string            # the path to the schema file
+            action:
+              type: string
+              enum: ["drop", "accept", "reject", "log"]
+            expression:
+              type: string       #for json bodies, the expression will be a jq expression that must be evaluated to true or false (if true, it will trigger the defined actions)
+          allOf:
+            - if: 
+                properties:
+                  type:
+                    enum: ["application/json"]
+              then: 
+                properties:
+                  schema:
+                    type: object
+                    required: [type, path]
+                    properties:
+                      type:
+                        type: string
+                        enum: [json, yaml]      # wether the schema is a json or yaml schema
+                      path:
+                        type: string            # the path to the schema file
 
-      # Case 1: schema is present → only type + action required
-      - if:
-          required: [schema]
-        then:
-          required: [type, action]
-        else:
-          # Case 2: schema is NOT present → expression is required
-          required: [type, action, expression]
+            # Case 1: schema is present → only type + action required
+            - if:
+                required: [schema]
+              then:
+                required: [type, action, expression]
+              else:
+                # Case 2: schema is NOT present → expression is required
+                required: [action, expression]
 
 additionalProperties: false

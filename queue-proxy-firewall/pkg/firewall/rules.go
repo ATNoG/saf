@@ -3,6 +3,7 @@ package firewall
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/itchyny/gojq"
 	pi "knative.dev/security-guard/pkg/pluginterfaces"
@@ -30,43 +31,37 @@ import (
 // }
 
 func evaluateRules(dir Direction, body interface{}) (Action, error) {
-	for i, rule := range dir.Rules {
-		pi.Log.Debugf("Checking rule expression: %s", rule.Body.Expression)
-		// fmt.Printf("Checking rule expression: %s\n", rule.Body.Expression)
+	for i := range dir.Rules {
+		rule := &dir.Rules[i]
 
-		if rule.Body == nil {
-			continue
-		}
+		pi.Log.Debugf("Checking rule expression: %s", rule.Expression)
 
-		match, err := evaluateBodyRule(rule.Body, body)
+		match, err := evaluateRule(rule, body)
 		if err != nil {
-			return "", fmt.Errorf("rule[%d]: %w", i, err)
+			return "", fmt.Errorf("rules[%d]: %w", i, err)
 		}
 
 		if !match {
 			continue
 		}
 
-		switch rule.Body.Action {
+		switch rule.Action {
+		case ActionLog:
+			logRuleHit(rule, body)
+			continue // logging is non-terminal
 
-			case ActionLog:
-				logRuleHit(rule.Body, body)
-				continue // keep evaluating
-
-			case ActionAccept, ActionDrop, ActionReject:
-				return rule.Body.Action, nil
+		case ActionAccept, ActionDrop, ActionReject:
+			return rule.Action, nil
 		}
 	}
 
-	// No terminal rule matched → default action
+	// No rule matched → default action
 	return dir.DefaultAction, nil
 }
 
-
-func evaluateBodyRule(rule *BodyRule, body interface{}) (bool, error) {
-	// If schema is present, expression may be absent (future extension)
-	if rule.Expression == "" {
-		return false, nil
+func evaluateRule(rule *Rule, body interface{}) (bool, error) {
+	if strings.TrimSpace(rule.Expression) == "" {
+		return false, fmt.Errorf("missing jq expression")
 	}
 
 	query, err := gojq.Parse(rule.Expression)
@@ -111,13 +106,15 @@ func evaluateBodyRule(rule *BodyRule, body interface{}) (bool, error) {
 	return result, nil
 }
 
-func logRuleHit(rule *BodyRule, body interface{}) {
-	bodyJSON, _ := json.Marshal(body)
+func logRuleHit(rule *Rule, body interface{}) {
+	bodyJSON, err := json.Marshal(body)
+	if err != nil {
+		bodyJSON = []byte("<failed to marshal body>")
+	}
 
 	pi.Log.Infof(
-		"Firewall LOG rule hit | action=%s | type=%s | expression=%q | body=%s",
+		"Firewall LOG rule hit | action=%s | expression=%q | body=%s",
 		rule.Action,
-		rule.Type,
 		rule.Expression,
 		string(bodyJSON),
 	)

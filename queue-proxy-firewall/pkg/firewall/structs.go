@@ -1,6 +1,11 @@
 package firewall
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/itchyny/gojq"
+)
 
 
 type Firewall struct {
@@ -24,25 +29,14 @@ const (
 )
 
 type Rule struct {
-	Body *BodyRule `json:"body,omitempty"`
-}
-
-type BodyRule struct {
-	Type       BodyType    `json:"type"`
 	Action     Action      `json:"action"`
 	Expression string      `json:"expression,omitempty"`
 	Schema     *BodySchema `json:"schema,omitempty"`
 }
 
-type BodyType string
-
-const (
-	BodyTypeJSON BodyType = "application/json"
-)
-
 type BodySchema struct {
-	Type SchemaType `json:"type"`
-	Path string     `json:"path"`
+	Type 	SchemaType 	`json:"type"`
+	Path 	string     	`json:"path"`
 }
 
 type SchemaType string
@@ -52,52 +46,82 @@ const (
 	SchemaTypeYAML SchemaType = "yaml"
 )
 
-func (b *BodyRule) Validate() error {
-	if b.Type == "" {
-		return fmt.Errorf("body.type is required")
+func (r *Rule) Validate() error {
+	// Action validation
+	switch r.Action {
+	case ActionAccept, ActionDrop, ActionReject, ActionLog:
+		// ok
+	default:
+		return fmt.Errorf("invalid action: %q", r.Action)
 	}
 
-	if b.Action == "" {
-		return fmt.Errorf("body.action is required")
+	// Expression is mandatory
+	if strings.TrimSpace(r.Expression) == "" {
+		return fmt.Errorf("expression must not be empty")
 	}
 
-	if b.Schema != nil {
-		// schema present → expression optional
-		if b.Schema.Type == "" || b.Schema.Path == "" {
-			return fmt.Errorf("schema.type and schema.path are required")
+	// Validate jq syntax early (IMPORTANT)
+	if _, err := gojq.Parse(r.Expression); err != nil {
+		return fmt.Errorf("invalid jq expression: %w", err)
+	}
+
+	// Schema validation (if present)
+	if r.Schema != nil {
+		switch r.Schema.Type {
+		case SchemaTypeJSON, SchemaTypeYAML:
+			// ok
+		default:
+			return fmt.Errorf("invalid schema.type: %q", r.Schema.Type)
 		}
-	} else {
-		// schema absent → expression required
-		if b.Expression == "" {
-			return fmt.Errorf("expression is required when schema is not present")
+
+		if strings.TrimSpace(r.Schema.Path) == "" {
+			return fmt.Errorf("schema.path must not be empty")
 		}
 	}
 
 	return nil
 }
 
-
-func (f *Firewall) Validate() error {
-	validateDir := func(name string, d *Direction) error {
-		if d == nil {
-			return nil
-		}
-		for i, r := range d.Rules {
-			if r.Body != nil {
-				if err := r.Body.Validate(); err != nil {
-					return fmt.Errorf("%s.rules[%d]: %w", name, i, err)
-				}
-			}
-		}
+func (d *Direction) Validate(name string) error {
+	if d == nil {
 		return nil
 	}
 
-	if err := validateDir("request", f.Request); err != nil {
-		return err
+	// default-action must be terminal
+	switch d.DefaultAction {
+	case ActionAccept, ActionDrop, ActionReject:
+		// ok
+	default:
+		return fmt.Errorf("%s.default-action must be accept, drop, or reject", name)
 	}
-	if err := validateDir("response", f.Response); err != nil {
-		return err
+
+	if len(d.Rules) == 0 {
+		return fmt.Errorf("%s.rules must not be empty", name)
 	}
+
+	for i := range d.Rules {
+		if err := d.Rules[i].Validate(); err != nil {
+			return fmt.Errorf("%s.rules[%d]: %w", name, i, err)
+		}
+	}
+
 	return nil
 }
+
+func (f *Firewall) Validate() error {
+	if f.Request == nil && f.Response == nil {
+		return fmt.Errorf("at least one of request or response must be defined")
+	}
+
+	if err := f.Request.Validate("request"); err != nil {
+		return err
+	}
+
+	if err := f.Response.Validate("response"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 

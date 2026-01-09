@@ -34,9 +34,7 @@ type plug struct {
 var errRequest error = errors.New("Request blocked by firewall")
 var errResponse error = errors.New("Response blocked by firewall")
 
-// https://github.com/knative-extensions/security-guard/blob/v0.6.1/pkg/test-gate/test-gate.go
 
-// ApproveRequest verifies the incoming JSON body against the defined firewall rules
 func (p *plug) ApproveRequest(req *http.Request) (*http.Request, error) {
 	restore := func(b []byte) {
 		req.Body = io.NopCloser(bytes.NewReader(b))
@@ -45,34 +43,49 @@ func (p *plug) ApproveRequest(req *http.Request) (*http.Request, error) {
 		req.Header.Set("Content-Type", "application/json")
 	}
 
+	var reqCtx RequestContext
+
 	action, err := evaluateJSONFirewall(
 		req.Body,
 		restore,
 		p.RequestRules,
 		"ApproveRequest",
+		func(body interface{}) FirewallContext {
+			reqCtx = buildRequestContext(req, body)
+			return FirewallContext{
+				"REQUEST": reqCtx,
+			}
+		},
 	)
+
 	if err != nil {
 		pi.Log.Errorf("%v", err)
-		return nil, errors.New("Request blocked by firewall: " + err.Error())
+		return nil, errors.New("request blocked by firewall")
 	}
 
-	if err := applyAction(action, errResponse); err != nil {
+	// Persist request context for response phase
+	req = req.WithContext(
+		context.WithValue(req.Context(), firewallCtxKey{}, reqCtx),
+	)
+
+	if err := applyAction(action, errRequest); err != nil {
 		return nil, err
 	}
 
 	return req, nil
 }
 
-
-// ApproveResponse verifies the returned JSON body against the defined firewall rules
-func (p *plug) ApproveResponse(
-	req *http.Request,
-	resp *http.Response,
-) (*http.Response, error) {
+func (p *plug) ApproveResponse(req *http.Request, resp *http.Response) (*http.Response, error) {
 	restore := func(b []byte) {
 		resp.Body = io.NopCloser(bytes.NewReader(b))
 		resp.ContentLength = int64(len(b))
 		resp.Header.Set("Content-Length", strconv.FormatInt(int64(len(b)), 10))
+	}
+
+	// Load request context
+	var reqCtx RequestContext
+	if v := req.Context().Value(firewallCtxKey{}); v != nil {
+		reqCtx, _ = v.(RequestContext)
 	}
 
 	action, err := evaluateJSONFirewall(
@@ -80,10 +93,17 @@ func (p *plug) ApproveResponse(
 		restore,
 		p.ResponseRules,
 		"ApproveResponse",
+		func(body interface{}) FirewallContext {
+			return FirewallContext{
+				"REQUEST":  reqCtx,
+				"RESPONSE": buildResponseContext(resp, body),
+			}
+		},
 	)
+
 	if err != nil {
 		pi.Log.Errorf("%v", err)
-		return nil, errors.New("Request blocked by firewall: " + err.Error())
+		return nil, errors.New("response blocked by firewall")
 	}
 
 	if err := applyAction(action, errResponse); err != nil {
@@ -98,6 +118,7 @@ func evaluateJSONFirewall(
 	restore func([]byte),
 	rules Direction,
 	logPrefix string,
+	contextBuilder func(body interface{}) FirewallContext,
 ) (Action, error) {
 	bodyBytes, err := io.ReadAll(bodyReader)
 	if err != nil {
@@ -108,11 +129,17 @@ func evaluateJSONFirewall(
 	defer restore(bodyBytes)
 
 	var body interface{}
-	if err := json.Unmarshal(bodyBytes, &body); err != nil {
-		return "", fmt.Errorf("%s: invalid JSON body: %w", logPrefix, err)
+	if len(bodyBytes) > 0 {
+		if err := json.Unmarshal(bodyBytes, &body); err != nil {
+			return "", fmt.Errorf("%s: invalid JSON body: %w", logPrefix, err)
+		}
+	} else {
+		body = nil
 	}
 
-	action, err := evaluateRules(rules, body)
+	ctx := contextBuilder(body)
+
+	action, err := evaluateRules(rules, ctx)
 	if err != nil {
 		return "", fmt.Errorf("%s: rule evaluation error: %w", logPrefix, err)
 	}
