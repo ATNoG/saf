@@ -10,7 +10,7 @@ metadata:
   namespace: bank-app
 type: Opaque
 data:
-  directus_api_token: R1R1UFJjX1lXazctdmZrRkZzUlBEcENTU1NfY3BseVY=
+  directus_api_token: Rm5RekxqWE9VaF9FLWZ2VW1NZWhGaGFIMkgxaWhicGw=
   jwt_key: dmVyeV9zZWNyZXRfa2V5
   otp_secret: MTIzNDU2
 ---
@@ -30,12 +30,9 @@ metadata:
   namespace: bank-app
 spec:
   template: 
-    metadata:
-      annotations:
-        qpoption.knative.dev/flow-activate: enable
     spec:
       containers:
-        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/entry-point
+        - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/entry-point
 ---
 apiVersion: serving.knative.dev/v1
 kind: Service
@@ -50,7 +47,7 @@ spec:
         qpoption.knative.dev/flow-activate: enable
     spec:
       containers:
-        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/login
+        - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/login
           env:
             - name: DIRECTUS_URL
               valueFrom:
@@ -79,7 +76,7 @@ spec:
   template: 
     spec:
       containers:
-        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/authorization
+        - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/authorization
           env:
             - name: SECRET_KEY
               valueFrom:
@@ -96,7 +93,7 @@ spec:
   template: 
     spec:
       containers:
-        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/verify-transaction
+        - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/verify-transaction
           env:
             - name: DIRECTUS_URL
               valueFrom:
@@ -128,7 +125,7 @@ spec:
   template: 
     spec:
       containers:
-        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/transaction
+        - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/transaction
           env:
             - name: DIRECTUS_URL
               valueFrom:
@@ -152,7 +149,7 @@ spec:
   template:
     spec:
       containers:
-        - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/result
+        - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/result
 ---
 apiVersion: sources.knative.dev/v1
 kind: SinkBinding

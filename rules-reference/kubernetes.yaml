@@ -1,3 +1,8 @@
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: bank-app
+# ---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -5,7 +10,7 @@ metadata:
   namespace: bank-app
 type: Opaque
 data:
-  directus_api_token: R1R1UFJjX1lXazctdmZrRkZzUlBEcENTU1NfY3BseVY=
+  directus_api_token: Rm5RekxqWE9VaF9FLWZ2VW1NZWhGaGFIMkgxaWhicGw=
   jwt_key: dmVyeV9zZWNyZXRfa2V5
   otp_secret: MTIzNDU2
 ---
@@ -25,12 +30,9 @@ metadata:
   namespace: bank-app
 spec:
   template:
-    metadata:
-      annotations:
-        qpoption.knative.dev/flow-activate: enable
     spec:
       containers:
-      - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/entry-point
+      - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/entry-point
 ---
 apiVersion: serving.knative.dev/v1
 kind: Service
@@ -41,10 +43,1032 @@ spec:
   template:
     metadata:
       annotations:
-        qpoption.knative.dev/flow-activate: enable
+        autoscaling.knative.dev/min-scale: "1"
+        autoscaling.knative.dev/max-scale: "1"
+        qpoption.knative.dev/firewall-config-rules: '{"request": {"default-action":
+          "accept", "rules": [{"body": {"type": "application/json", "action": "drop",
+          "expression": "(.username? | not) or (.password? | not)\n"}}, {"body": {"type":
+          "application/json", "action": "drop", "expression": ".username?\n| (type
+          != \"string\"\n  or length < 3\n  or length > 64\n  or test(\"^[a-zA-Z0-9._-]+$\")
+          | not)\n"}}, {"body": {"type": "application/json", "action": "drop", "expression":
+          ".password?\n| (type != \"string\"\n  or length < 8\n  or length > 128)\n"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": ".username?\n|
+          test(\"(?i)(union\\\\s+select|select\\\\s+.*from|or\\\\s+1=1|--|;|/\\\\*)\")\n"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?]\n| map(tostring)\n| join(\"\"))\n| test(\"[\\\\x00-\\\\x08\\\\x0B\\\\x0C\\\\x0E-\\\\x1F]\")\n"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?,
+          .password?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": "([.username?]\n|
+          map(tostring)\n| join(\"\"))\n| test(\"admin\")\n"}}]}, "response": {"default-action":
+          "accept", "rules": [{"body": {"type": "application/json", "action": "drop",
+          "expression": ".error?\n| type == \"string\"\nand test(\"(?i)(stacktrace|exception|traceback|sql|directus)\")\n"}},
+          {"body": {"type": "application/json", "action": "drop", "expression": ".password?
+          | not | not\n"}}, {"body": {"type": "application/json", "action": "drop",
+          "expression": ".token? or .jwt? or .access_token?\n"}}]}}'
+        qpoption.knative.dev/firewall-activate: enable
     spec:
       containers:
-      - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/login
+      - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/login
         env:
         - name: DIRECTUS_URL
           valueFrom:
@@ -61,153 +1085,153 @@ spec:
             secretKeyRef:
               name: bank-app-secret
               key: jwt_key
----
-apiVersion: serving.knative.dev/v1
-kind: Service
-metadata:
-  name: authorization
-  namespace: bank-app
-spec:
-  template:
-    spec:
-      containers:
-      - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/authorization
-        env:
-        - name: SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: bank-app-secret
-              key: jwt_key
-    metadata:
-      annotations:
-        qpoption.knative.dev/qpoption.knative.dev/firewall-config-rules: '{"request":
-          {"default-action": "accept", "rules": [{"body": {"type": "application/json",
-          "action": "drop", "expression": ".client? | type == \"string\" | not\n"}},
-          {"body": {"type": "application/json", "action": "drop", "expression": ".?\n|
-          tostring\n| test(\"(?i)(union\\\\s+select|select\\\\s+.*from|{{|}}|{%-|-%}|__class__|__mro__|__subclasses__)\")\n"}}]},
-          "response": {"default-action": "accept", "rules": [{"body": {"type": "application/json",
-          "action": "drop", "expression": ".error? | type == \"string\" and test(\"(?i)(stacktrace|exception|traceback)\")\n"}},
-          {"body": {"type": "application/json", "action": "drop", "expression": ".message?
-          | test(\"Access denied|Invalid token\")\n"}}]}}'
-        qpoption.knative.dev/qpoption.knative.dev/firewall-activate: enable
----
-apiVersion: serving.knative.dev/v1
-kind: Service
-metadata:
-  name: verify-transaction
-  namespace: bank-app
-spec:
-  template:
-    spec:
-      containers:
-      - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/verify-transaction
-        env:
-        - name: DIRECTUS_URL
-          valueFrom:
-            configMapKeyRef:
-              name: bank-app-configmap
-              key: directus_url
-        - name: DIRECTUS_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: bank-app-secret
-              key: directus_api_token
-        - name: OTP_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: bank-app-secret
-              key: otp_secret
-        - name: MAX_AMOUNT
-          valueFrom:
-            configMapKeyRef:
-              name: bank-app-configmap
-              key: max_amount
-    metadata:
-      annotations:
-        qpoption.knative.dev/qpoption.knative.dev/firewall-config-rules: '{"request":
-          {"default-action": "accept", "rules": [{"body": {"type": "application/json",
-          "action": "drop", "expression": ".amount?\n| type == \"number\"\nand (.
-          >= 0) | not\n"}}, {"body": {"type": "application/json", "action": "drop",
-          "expression": ".otp?\n| (type == \"string\") | not\n"}}, {"body": {"type":
-          "application/json", "action": "drop", "expression": ".client? | type ==
-          \"string\" | not\n"}}, {"body": {"type": "application/json", "action": "drop",
-          "expression": ".destination_client? | type == \"string\" | not\n"}}]}, "response":
-          {"default-action": "accept", "rules": [{"body": {"type": "application/json",
-          "action": "drop", "expression": ".error? | type == \"string\" and test(\"(?i)(stacktrace|exception|traceback)\")\n"}},
-          {"body": {"type": "application/json", "action": "drop", "expression": ".amount?
-          | type == \"number\" and (. < 0)\n"}}]}}'
-        qpoption.knative.dev/qpoption.knative.dev/firewall-activate: enable
----
-apiVersion: serving.knative.dev/v1
-kind: Service
-metadata:
-  name: transaction
-  namespace: bank-app
-spec:
-  template:
-    spec:
-      containers:
-      - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/transaction
-        env:
-        - name: DIRECTUS_URL
-          valueFrom:
-            configMapKeyRef:
-              name: bank-app-configmap
-              key: directus_url
-        - name: DIRECTUS_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: bank-app-secret
-              key: directus_api_token
-    metadata:
-      annotations:
-        qpoption.knative.dev/qpoption.knative.dev/firewall-config-rules: '{"request":
-          {"default-action": "accept", "rules": [{"body": {"type": "application/json",
-          "action": "drop", "expression": ".from? | type == \"string\" | not\n"}},
-          {"body": {"type": "application/json", "action": "drop", "expression": ".to?
-          | type == \"string\" | not\n"}}, {"body": {"type": "application/json", "action":
-          "drop", "expression": ".amount? | type == \"number\" and (. >= 0) | not\n"}},
-          {"body": {"type": "application/json", "action": "drop", "expression": ".?
-          | tostring | test(\"(?i)(union\\\\s+select|select\\\\s+.*from|{{|}}|{%-|-%}|__class__|__mro__|__subclasses__|eval\\\\(|document\\\\.cookie)\")
-          \n"}}]}, "response": {"default-action": "accept", "rules": [{"body": {"type":
-          "application/json", "action": "drop", "expression": ".error? | type == \"string\"
-          and test(\"(?i)(stacktrace|exception|traceback)\")\n"}}]}}'
-        qpoption.knative.dev/qpoption.knative.dev/firewall-activate: enable
----
-apiVersion: serving.knative.dev/v1
-kind: Service
-metadata:
-  name: result
-  namespace: bank-app
-spec:
-  template:
-    spec:
-      containers:
-      - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/result
-    metadata:
-      annotations:
-        qpoption.knative.dev/qpoption.knative.dev/firewall-config-rules: '{"request":
-          {"default-action": "accept", "rules": [{"body": {"type": "application/json",
-          "action": "drop", "expression": ".error? | type == \"string\" and test(\"(?i)(stacktrace|exception|traceback)\")\n"}}]},
-          "response": {"default-action": "accept", "rules": [{"body": {"type": "application/json",
-          "action": "drop", "expression": ".error? | type == \"string\" and test(\"(?i)(stacktrace|exception|traceback)\")\n"}}]}}'
-        qpoption.knative.dev/qpoption.knative.dev/firewall-activate: enable
----
-apiVersion: sources.knative.dev/v1
-kind: SinkBinding
-metadata:
-  generation: 1
-  name: bind-entry-point
-  namespace: bank-app
-spec:
-  sink:
-    ref:
-      apiVersion: eventing.knative.dev/v1
-      kind: Broker
-      name: broker
-      namespace: bank-app
-  subject:
-    apiVersion: serving.knative.dev/v1
-    kind: Service
-    name: entry-point
-    namespace: bank-app
+# ---
+# apiVersion: serving.knative.dev/v1
+# kind: Service
+# metadata:
+#   name: authorization
+#   namespace: bank-app
+# spec:
+#   template:
+#     spec:
+#       containers:
+#       - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/authorization
+#         env:
+#         - name: SECRET_KEY
+#           valueFrom:
+#             secretKeyRef:
+#               name: bank-app-secret
+#               key: jwt_key
+#     metadata:
+#       annotations:
+#         qpoption.knative.dev/qpoption.knative.dev/firewall-config-rules: '{"request":
+#           {"default-action": "accept", "rules": [{"body": {"type": "application/json",
+#           "action": "drop", "expression": ".client? | type == \"string\" | not\n"}},
+#           {"body": {"type": "application/json", "action": "drop", "expression": ".?\n|
+#           tostring\n| test(\"(?i)(union\\\\s+select|select\\\\s+.*from|{{|}}|{%-|-%}|__class__|__mro__|__subclasses__)\")\n"}}]},
+#           "response": {"default-action": "accept", "rules": [{"body": {"type": "application/json",
+#           "action": "drop", "expression": ".error? | type == \"string\" and test(\"(?i)(stacktrace|exception|traceback)\")\n"}},
+#           {"body": {"type": "application/json", "action": "drop", "expression": ".message?
+#           | test(\"Access denied|Invalid token\")\n"}}]}}'
+#         qpoption.knative.dev/qpoption.knative.dev/firewall-activate: enable
+# ---
+# apiVersion: serving.knative.dev/v1
+# kind: Service
+# metadata:
+#   name: verify-transaction
+#   namespace: bank-app
+# spec:
+#   template:
+#     spec:
+#       containers:
+#       - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/verify-transaction
+#         env:
+#         - name: DIRECTUS_URL
+#           valueFrom:
+#             configMapKeyRef:
+#               name: bank-app-configmap
+#               key: directus_url
+#         - name: DIRECTUS_TOKEN
+#           valueFrom:
+#             secretKeyRef:
+#               name: bank-app-secret
+#               key: directus_api_token
+#         - name: OTP_SECRET
+#           valueFrom:
+#             secretKeyRef:
+#               name: bank-app-secret
+#               key: otp_secret
+#         - name: MAX_AMOUNT
+#           valueFrom:
+#             configMapKeyRef:
+#               name: bank-app-configmap
+#               key: max_amount
+#     metadata:
+#       annotations:
+#         qpoption.knative.dev/qpoption.knative.dev/firewall-config-rules: '{"request":
+#           {"default-action": "accept", "rules": [{"body": {"type": "application/json",
+#           "action": "drop", "expression": ".amount?\n| type == \"number\"\nand (.
+#           >= 0) | not\n"}}, {"body": {"type": "application/json", "action": "drop",
+#           "expression": ".otp?\n| (type == \"string\") | not\n"}}, {"body": {"type":
+#           "application/json", "action": "drop", "expression": ".client? | type ==
+#           \"string\" | not\n"}}, {"body": {"type": "application/json", "action": "drop",
+#           "expression": ".destination_client? | type == \"string\" | not\n"}}]}, "response":
+#           {"default-action": "accept", "rules": [{"body": {"type": "application/json",
+#           "action": "drop", "expression": ".error? | type == \"string\" and test(\"(?i)(stacktrace|exception|traceback)\")\n"}},
+#           {"body": {"type": "application/json", "action": "drop", "expression": ".amount?
+#           | type == \"number\" and (. < 0)\n"}}]}}'
+#         qpoption.knative.dev/qpoption.knative.dev/firewall-activate: enable
+# ---
+# apiVersion: serving.knative.dev/v1
+# kind: Service
+# metadata:
+#   name: transaction
+#   namespace: bank-app
+# spec:
+#   template:
+#     spec:
+#       containers:
+#       - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/transaction
+#         env:
+#         - name: DIRECTUS_URL
+#           valueFrom:
+#             configMapKeyRef:
+#               name: bank-app-configmap
+#               key: directus_url
+#         - name: DIRECTUS_TOKEN
+#           valueFrom:
+#             secretKeyRef:
+#               name: bank-app-secret
+#               key: directus_api_token
+#     metadata:
+#       annotations:
+#         qpoption.knative.dev/qpoption.knative.dev/firewall-config-rules: '{"request":
+#           {"default-action": "accept", "rules": [{"body": {"type": "application/json",
+#           "action": "drop", "expression": ".from? | type == \"string\" | not\n"}},
+#           {"body": {"type": "application/json", "action": "drop", "expression": ".to?
+#           | type == \"string\" | not\n"}}, {"body": {"type": "application/json", "action":
+#           "drop", "expression": ".amount? | type == \"number\" and (. >= 0) | not\n"}},
+#           {"body": {"type": "application/json", "action": "drop", "expression": ".?
+#           | tostring | test(\"(?i)(union\\\\s+select|select\\\\s+.*from|{{|}}|{%-|-%}|__class__|__mro__|__subclasses__|eval\\\\(|document\\\\.cookie)\")
+#           \n"}}]}, "response": {"default-action": "accept", "rules": [{"body": {"type":
+#           "application/json", "action": "drop", "expression": ".error? | type == \"string\"
+#           and test(\"(?i)(stacktrace|exception|traceback)\")\n"}}]}}'
+#         qpoption.knative.dev/qpoption.knative.dev/firewall-activate: enable
+# ---
+# apiVersion: serving.knative.dev/v1
+# kind: Service
+# metadata:
+#   name: result
+#   namespace: bank-app
+# spec:
+#   template:
+#     spec:
+#       containers:
+#       - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/result
+#     metadata:
+#       annotations:
+#         qpoption.knative.dev/qpoption.knative.dev/firewall-config-rules: '{"request":
+#           {"default-action": "accept", "rules": [{"body": {"type": "application/json",
+#           "action": "drop", "expression": ".error? | type == \"string\" and test(\"(?i)(stacktrace|exception|traceback)\")\n"}}]},
+#           "response": {"default-action": "accept", "rules": [{"body": {"type": "application/json",
+#           "action": "drop", "expression": ".error? | type == \"string\" and test(\"(?i)(stacktrace|exception|traceback)\")\n"}}]}}'
+#         qpoption.knative.dev/qpoption.knative.dev/firewall-activate: enable
+# ---
+# apiVersion: sources.knative.dev/v1
+# kind: SinkBinding
+# metadata:
+#   generation: 1
+#   name: bind-entry-point
+#   namespace: bank-app
+# spec:
+#   sink:
+#     ref:
+#       apiVersion: eventing.knative.dev/v1
+#       kind: Broker
+#       name: broker
+#       namespace: bank-app
+#   subject:
+#     apiVersion: serving.knative.dev/v1
+#     kind: Service
+#     name: entry-point
+#     namespace: bank-app
