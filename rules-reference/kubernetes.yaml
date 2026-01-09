@@ -1,3 +1,8 @@
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: bank-app
+# ---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -5,7 +10,7 @@ metadata:
   namespace: bank-app
 type: Opaque
 data:
-  directus_api_token: R1R1UFJjX1lXazctdmZrRkZzUlBEcENTU1NfY3BseVY=
+  directus_api_token: Rm5RekxqWE9VaF9FLWZ2VW1NZWhGaGFIMkgxaWhicGw=
   jwt_key: dmVyeV9zZWNyZXRfa2V5
   otp_secret: MTIzNDU2
 ---
@@ -25,12 +30,9 @@ metadata:
   namespace: bank-app
 spec:
   template:
-    metadata:
-      annotations:
-        qpoption.knative.dev/flow-activate: enable
     spec:
       containers:
-      - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/entry-point
+      - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/entry-point
 ---
 apiVersion: serving.knative.dev/v1
 kind: Service
@@ -41,7 +43,12 @@ spec:
   template:
     metadata:
       annotations:
+<<<<<<< HEAD
         qpoption.knative.dev/flow-activate: enable
+=======
+        autoscaling.knative.dev/min-scale: "1"
+        autoscaling.knative.dev/max-scale: "1"
+>>>>>>> 4645b39d78088a95b56836d7499b7f66bb726648
         qpoption.knative.dev/firewall-config-rules: '{"request": {"default-action":
           "accept", "rules": [{"body": {"type": "application/json", "action": "drop",
           "expression": "(.username? | not) or (.password? | not)\n"}}, {"body": {"type":
@@ -1065,7 +1072,7 @@ spec:
         qpoption.knative.dev/firewall-activate: enable
     spec:
       containers:
-      - image: ghcr.io/atnog/knative-workflow-apps-kit/bank-app/login
+      - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/login
         env:
         - name: DIRECTUS_URL
           valueFrom:
