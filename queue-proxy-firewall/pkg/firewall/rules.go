@@ -30,13 +30,14 @@ import (
 // 	return dir.DefaultAction, nil
 // }
 
-func evaluateRules(dir Direction, body interface{}) (Action, error) {
+func evaluateRules(dir Direction, ctx interface{}) (Action, error) {
 	for i := range dir.Rules {
 		rule := &dir.Rules[i]
 
 		pi.Log.Debugf("Checking rule expression: %s", rule.Expression)
+		fmt.Printf("Checking rule expression: %s\n", rule.Expression)
 
-		match, err := evaluateRule(rule, body)
+		match, err := evaluateRule(rule, ctx)
 		if err != nil {
 			return "", fmt.Errorf("rules[%d]: %w", i, err)
 		}
@@ -47,19 +48,19 @@ func evaluateRules(dir Direction, body interface{}) (Action, error) {
 
 		switch rule.Action {
 		case ActionLog:
-			logRuleHit(rule, body)
-			continue // logging is non-terminal
+			logRuleHit(rule, ctx)
+			continue // non-terminal
 
 		case ActionAccept, ActionDrop, ActionReject:
 			return rule.Action, nil
 		}
 	}
 
-	// No rule matched → default action
 	return dir.DefaultAction, nil
 }
 
-func evaluateRule(rule *Rule, body interface{}) (bool, error) {
+
+func evaluateRule(rule *Rule, ctx interface{}) (bool, error) {
 	if strings.TrimSpace(rule.Expression) == "" {
 		return false, fmt.Errorf("missing jq expression")
 	}
@@ -69,7 +70,7 @@ func evaluateRule(rule *Rule, body interface{}) (bool, error) {
 		return false, fmt.Errorf("invalid jq expression: %w", err)
 	}
 
-	iter := query.Run(body)
+	iter := query.Run(ctx)
 
 	var (
 		result    bool
@@ -106,16 +107,17 @@ func evaluateRule(rule *Rule, body interface{}) (bool, error) {
 	return result, nil
 }
 
-func logRuleHit(rule *Rule, body interface{}) {
-	bodyJSON, err := json.Marshal(body)
+
+func logRuleHit(rule *Rule, ctx interface{}) {
+	ctxJSON, err := json.Marshal(ctx)
 	if err != nil {
-		bodyJSON = []byte("<failed to marshal body>")
+		ctxJSON = []byte("<failed to marshal firewall context>")
 	}
 
 	pi.Log.Infof(
-		"Firewall LOG rule hit | action=%s | expression=%q | body=%s",
+		"Firewall LOG rule hit | action=%s | expression=%q | context=%s",
 		rule.Action,
 		rule.Expression,
-		string(bodyJSON),
+		string(ctxJSON),
 	)
 }

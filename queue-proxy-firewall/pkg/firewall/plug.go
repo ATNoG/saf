@@ -139,12 +139,31 @@ func evaluateJSONFirewall(
 
 	ctx := contextBuilder(body)
 
-	action, err := evaluateRules(rules, ctx)
+	jqCtx, err := toJQContext(ctx)
+	if err != nil {
+		return "", fmt.Errorf("%s: failed to build jq context: %w", logPrefix, err)
+	}
+
+	action, err := evaluateRules(rules, jqCtx)
 	if err != nil {
 		return "", fmt.Errorf("%s: rule evaluation error: %w", logPrefix, err)
 	}
 
 	return action, nil
+}
+
+func toJQContext(v any) (interface{}, error) {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+
+	var m interface{}
+	if err := json.Unmarshal(b, &m); err != nil {
+		return nil, err
+	}
+
+	return m, nil
 }
 
 func applyAction(action Action, err error) error {
@@ -188,7 +207,6 @@ func (p *plug) ProcessAnnotations() bool {
 	file, err := os.Open(annotationsFilePath)
 	if err != nil {
 		pi.Log.Errorf("File %s cannot be opened - is PodInfo mounted? os.Open Error: %s", annotationsFilePath, err.Error())
-		fmt.Printf("File %s cannot be opened - is PodInfo mounted? os.Open Error: %s\n", annotationsFilePath, err.Error())
 		return false
 	}
 	defer file.Close()
@@ -202,7 +220,6 @@ func (p *plug) ProcessAnnotations() bool {
 
 	for scanner.Scan() {
 		txt := scanner.Text()
-		txt = strings.ToLower(txt)
 
 		// Annotation structure:
 		// 		either: <qpOptionPrefix><extension>-activate=s<val>
@@ -234,38 +251,12 @@ func (p *plug) ProcessAnnotations() bool {
 	}
 	if err := scanner.Err(); err != nil {
 		pi.Log.Errorf("File %s - scanner Error %s", annotationsFilePath, err.Error())
-		fmt.Printf("File %s - scanner Error %s\n", annotationsFilePath, err.Error())
 		return false
 	}
 
-	// get the firewall rules
-	raw, ok := config["rules"]
-	if !ok {
-		pi.Log.Errorf("Key rules not found in config")
-		fmt.Printf("Key rules not found in config\n")
-		return false
-	}
-	unescaped, err := strconv.Unquote("\"" + raw + "\"")
+	firewall, err := loadUserFirewall(config)
 	if err != nil {
-		pi.Log.Errorf("Failed to unescape JSON: %v", err)
-		fmt.Printf("Failed to unescape JSON: %v\n", err)
-		return false
-	}
-
-	var firewall Firewall
-
-	decoder := json.NewDecoder(strings.NewReader(unescaped))
-	decoder.DisallowUnknownFields()
-
-	if err := decoder.Decode(&firewall); err != nil {
-		pi.Log.Errorf("Invalid firewall rules JSON: %v", err)
-		fmt.Printf("Failed to unescape JSON: %v\n", err)
-		return false
-	}
-
-	if err := firewall.Validate(); err != nil {
-		pi.Log.Errorf("Firewall rules validation failed: %v", err)
-		fmt.Printf("Firewall rules validation failed: %v\n", err)
+		pi.Log.Errorf("Error loading firewall rules: %v", err)
 		return false
 	}
 

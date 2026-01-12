@@ -15,7 +15,7 @@ def main():
     functions_rules = {}
     for function in workflow["functions"]:
         if (metadata := function.get("metadata")) and (firewall := metadata.get("firewall")):
-            valid, message = validate({"firewall": firewall})
+            valid, message = validate(firewall)
 
             if valid:
                 functions_rules[function["operation"].replace("knative:services.v1.serving.knative.dev/", "").split("?")[0]] = firewall
@@ -26,15 +26,15 @@ def main():
         if config.get("kind") == "Service":
             for function in functions_rules:
                 if config["metadata"]["name"] == function:
-                    if "spec" not in config:
+                    if "spec" not in config or not config["spec"]:
                         config["spec"] = {}
-                    if "template" not in config["spec"]:
+                    if "template" not in config["spec"] or not config["spec"]["template"]:
                         config["spec"]["template"] = {}
-                    if "metadata" not in config["spec"]["template"]:
+                    if "metadata" not in config["spec"]["template"] or not config["spec"]["template"]["metadata"]:
                         config["spec"]["template"]["metadata"] = {}
-                    if "annotations" not in config["spec"]["template"]["metadata"]:
+                    if "annotations" not in config["spec"]["template"]["metadata"] or not config["spec"]["template"]["metadata"]["annotations"]:
                         config["spec"]["template"]["metadata"]["annotations"] = {}
-                    config["spec"]["template"]["metadata"]["annotations"]["qpoption.knative.dev/firewall-config-rules"] = json.dumps(functions_rules[function])
+                    config["spec"]["template"]["metadata"]["annotations"]["qpoption.knative.dev/firewall-config-rules-json"] = json.dumps(functions_rules[function])
                     config["spec"]["template"]["metadata"]["annotations"]["qpoption.knative.dev/firewall-activate"] = "enable"
     
     with open("kubernetes.yaml", "w") as f:

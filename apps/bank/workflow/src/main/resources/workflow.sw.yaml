@@ -20,15 +20,47 @@ functions:
         request:
           default-action: accept
           rules:
-            # 1. Required fields must exist
-            - type: application/json
-              action: drop
+            # 1. Drop if method is not POST
+            - action: drop
               expression: |
-                (.REQUEST.BODY.username? | not) or (.BODY.password? | not)
+                  .REQUEST.METHOD
+                  | ascii_upcase
+                  | . != "POST"
+
+            # 3. Drop if path is not exactly /
+            - action: drop
+              expression: |
+                  .REQUEST.URI.path != "/"
+
+            # 4. Drop if query string is present (login should not use query params)
+            - action: drop
+              expression: |
+                .REQUEST.URI.query | length > 0
+
+            # 5. Drop if Content-Type is not application/json
+            - action: drop
+              expression: |
+                (
+                  .REQUEST.HEADERS["content-type"] // []
+                  | any(
+                      ascii_downcase
+                      | startswith("application/json")
+                    )
+                  | not
+                )
+            # 6. Drop if Authorization header is present (login should not have one)
+            - action: drop
+              expression: |
+                  .REQUEST.HEADERS
+                  | has("authorization")
+
+            # 1. Required fields must exist
+            - action: drop
+              expression: |
+                (.REQUEST.BODY.username? | not) or (.REQUEST.BODY.password? | not)
 
             # 2. Username must be a safe string
-            - type: application/json
-              action: drop
+            - action: drop
               expression: |
                   .REQUEST.BODY.username?
                   | (type != "string"
@@ -37,8 +69,7 @@ functions:
                     or test("^[a-zA-Z0-9._-]+$") | not)
 
             # 3. Password must be a string with sane size limits
-            - type: application/json
-              action: drop
+            - action: drop
               expression: |
                 .REQUEST.BODY.password?
                 | (type != "string"
@@ -46,28 +77,24 @@ functions:
                 or length > 128)
 
             # 4. SQL injection detection (username is interpolated into query)
-            - type: application/json
-              action: drop
+            - action: drop
               expression: |
                   .REQUEST.BODY.username?
                   | test("(?i)(union\\s+select|select\\s+.*from|or\\s+1=1|--|;|/\\*)")
 
             # 5. Template / code injection detection
-            - type: application/json
-              action: drop
+            - action: drop
               expression: |
                   ([.REQUEST.BODY.username?, .REQUEST.BODY.password?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
 
             # 6. Control characters / binary payloads
-            - type: application/json
-              action: drop
+            - action: drop
               expression: |
                   ([.REQUEST.BODY.username?, .REQUEST.BODY.password?]
                   | map(tostring)
                   | join(""))
                   | test("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]")
-            - type: application/json
-              action: drop
+            - action: drop
               expression: |
                   ([.REQUEST.BODY.username?]
                   | map(tostring)
@@ -78,22 +105,19 @@ functions:
           rules:
 
             # 7. No stack traces or internal errors
-            - type: application/json
-              action: drop
+            - action: drop
               expression: |
                   .RESPONSE.BODY.error?
                   | type == "string"
                   and test("(?i)(stacktrace|exception|traceback|sql|directus)")
 
             # 8. Password must never appear in response
-            - type: application/json
-              action: drop
+            - action: drop
               expression: |
                   .RESPONSE.BODY.password? | not | not
 
             # 9. JWT must not be returned in the body
-            - type: application/json
-              action: drop
+            - action: drop
               expression: |
                   .RESPONSE.BODY.token? or .jwt? or .access_token?
 #   - name: authorization
