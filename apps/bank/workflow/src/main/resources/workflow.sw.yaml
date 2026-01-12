@@ -120,168 +120,377 @@ functions:
             - action: drop
               expression: |
                   .RESPONSE.BODY.token? or .jwt? or .access_token?
-#   - name: authorization
-#     type: custom
-#     operation: knative:services.v1.serving.knative.dev/authorization?method=POST
-#     metadata:
-#       firewall:
-#         request:
-#           default-action: accept
-#           rules:
-#             # Required fields
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .client? | type == "string" | not
-#             # Catch malicious data in fields
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .?
-#                   | tostring
-#                   | test("(?i)(union\\s+select|select\\s+.*from|{{|}}|{%-|-%}|__class__|__mro__|__subclasses__)")
+  - name: authorization
+    type: custom
+    operation: knative:services.v1.serving.knative.dev/authorization?method=POST
+    metadata:
+      firewall:
+        request:
+          default-action: accept
+          rules:
+            # 1. Drop if method is not POST
+            - action: drop
+              expression: |
+                  .REQUEST.METHOD
+                  | ascii_upcase
+                  | . != "POST"
 
-#         response:
-#           default-action: accept
-#           rules:
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .error? | type == "string" and test("(?i)(stacktrace|exception|traceback)")
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .message? | test("Access denied|Invalid token")
-#   - name: verify-transaction
-#     type: custom
-#     operation: knative:services.v1.serving.knative.dev/verify-transaction?method=POST
-#     metadata:
-#       firewall:
-#         request:
-#           default-action: accept
-#           rules:
-#             # amount must be numeric and non-negative
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .amount?
-#                   | type == "number"
-#                   and (. >= 0) | not
+            # 2. Drop if path is not exactly /
+            - action: drop
+              expression: |
+                  .REQUEST.URI.path != "/"
 
-#             # OTP must be a string/number if present
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .otp?
-#                   | (type == "string") | not
+            # 3. Drop if query string is present
+            - action: drop
+              expression: |
+                .REQUEST.URI.query | length > 0
 
-#             # client and destination_client must be strings
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .client? | type == "string" | not
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .destination_client? | type == "string" | not
-#         response:
-#           default-action: accept
-#           rules:
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .error? | type == "string" and test("(?i)(stacktrace|exception|traceback)")
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .amount? | type == "number" and (. < 0)
-#   - name: transaction
-#     type: custom
-#     operation: knative:services.v1.serving.knative.dev/transaction?method=POST
-#     metadata:
-#       firewall:
-#         request:
-#           default-action: accept
-#           rules:
-#             # 'from' and 'to' must be strings
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .from? | type == "string" | not
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .to? | type == "string" | not
+            # 4. Drop if Content-Type is not application/json
+            - action: drop
+              expression: |
+                (
+                  .REQUEST.HEADERS["content-type"] // []
+                  | any(
+                      ascii_downcase
+                      | startswith("application/json")
+                    )
+                  | not
+                )
 
-#             # amount must be numeric and non-negative
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .amount? | type == "number" and (. >= 0) | not
-            
-#             # ---------- SQLi / template injection catch-all ----------
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .? | tostring | test("(?i)(union\\s+select|select\\s+.*from|{{|}}|{%-|-%}|__class__|__mro__|__subclasses__|eval\\(|document\\.cookie)") 
-#         response:
-#           default-action: accept
-#           rules:
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .error? | type == "string" and test("(?i)(stacktrace|exception|traceback)")
-#   - name: result
-#     type: custom
-#     operation: knative:services.v1.serving.knative.dev/result?method=POST
-#     metadata:
-#       firewall:
-#         request:
-#           default-action: accept
-#           rules:
-#             # reject responses with error content (malicious leakage)
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .error? | type == "string" and test("(?i)(stacktrace|exception|traceback)")
-#         response:
-#           default-action: accept
-#           rules:
-#             - body:
-#                 type: application/json
-#                 action: drop
-#                 expression: |
-#                   .error? | type == "string" and test("(?i)(stacktrace|exception|traceback)")
-#   - name: process-event
-#     type: expression
-#     operation: |
-#       {
-#         transformed: (
-#           (
-#             .headers
-#             | to_entries
-#             | map(select(.key | ascii_downcase != "host"))
-#             | map({("HEADER_" + .key): .value})
-#             | add
-#           ) + .data
-#         )
-#       }
+            # 5. Require Authorization header (must be present for auth)
+            - action: drop
+              expression: |
+                  (.REQUEST.HEADERS
+                  | has("authorization")
+                  | not)
+
+            # 6. Authorization header must be Bearer token format
+            - action: drop
+              expression: |
+                  (.REQUEST.HEADERS["authorization"]
+                  | test("^Bearer ")
+                  | not)
+
+            # 7. Token must be present and non-empty
+            - action: drop
+              expression: |
+                  (.REQUEST.HEADERS["authorization"]
+                  | split(" ")
+                  | .[1]
+                  | length == 0)
+
+            # 8. Control characters / binary payloads in token
+            - action: drop
+              expression: |
+                  (.REQUEST.HEADERS["authorization"]
+                  | split(" ")
+                  | .[1]
+                  | test("[\x00-\x08\x0B\x0C\x0E-\x1F]"))
+
+            # 9. SQL injection detection in token
+            - action: drop
+              expression: |
+                  (.REQUEST.HEADERS["authorization"]
+                  | split(" ")
+                  | .[1]
+                  | test("(?i)(union\\s+select|select\\s+.*from|or\\s+1=1|--|;|/\\*)"))
+
+            # 10. Template / code injection detection in token
+            - action: drop
+              expression: |
+                  (.REQUEST.HEADERS["authorization"]
+                  | split(" ")
+                  | .[1]
+                  | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__"))
+        response:
+          default-action: accept
+          rules:
+            # 1. No stack traces or internal errors
+            - action: drop
+              expression: |
+                  .RESPONSE.BODY.error?
+                  | type == "string"
+                  and test("(?i)(stacktrace|exception|traceback|sql|directus)")
+
+            # 2. JWT must not be returned in the body
+            - action: drop
+              expression: |
+                  .RESPONSE.BODY.token? or .jwt? or .access_token?
+
+            # 3. Password must never appear in response
+            - action: drop
+              expression: |
+                  .RESPONSE.BODY.password? | not | not
+
+            # 4. Validate response structure
+            - action: drop
+              expression: |
+                  (.RESPONSE.BODY.message? | not) or (.RESPONSE.BODY.client? | not) or (.RESPONSE.BODY["do-verification"]? | not)
+  - name: verify-transaction
+    type: custom
+    operation: knative:services.v1.serving.knative.dev/verify-transaction?method=POST
+    metadata:
+      firewall:
+        request:
+          default-action: accept
+          rules:
+            # 1. Drop if method is not POST
+            - action: drop
+              expression: |
+                  .REQUEST.METHOD
+                  | ascii_upcase
+                  | . != "POST"
+
+            # 2. Drop if path is not exactly /
+            - action: drop
+              expression: |
+                  .REQUEST.URI.path != "/"
+
+            # 3. Drop if query string is present
+            - action: drop
+              expression: |
+                .REQUEST.URI.query | length > 0
+
+            # 4. Drop if Content-Type is not application/json
+            - action: drop
+              expression: |
+                (
+                  .REQUEST.HEADERS["content-type"] // []
+                  | any(
+                      ascii_downcase
+                      | startswith("application/json")
+                    )
+                  | not
+                )
+
+            # 5. Required fields must exist
+            - action: drop
+              expression: |
+                (.REQUEST.BODY.client? | not) or (.REQUEST.BODY.destination_client? | not) or (.REQUEST.BODY.amount? | not)
+
+            # 6. Amount must be a valid number
+            - action: drop
+              expression: |
+                (.REQUEST.BODY.amount | type != "number" and (type != "string" or test("^[0-9]+(\.[0-9]+)?$") | not))
+
+            # 7. Client usernames must be safe strings
+            - action: drop
+              expression: |
+                ([.REQUEST.BODY.client?, .REQUEST.BODY.destination_client?] | map(
+                  select(type == "string" and length >= 3 and length <= 64 and test("^[a-zA-Z0-9._-]+$"))
+                ) | length != 2
+
+            # 8. Control characters / binary payloads
+            - action: drop
+              expression: |
+                ([.REQUEST.BODY.client?, .REQUEST.BODY.destination_client?, .REQUEST.BODY.amount?]
+                | map(tostring)
+                | join(""))
+                | test("[\x00-\x08\x0B\x0C\x0E-\x1F]")
+
+            # 9. SQL injection detection
+            - action: drop
+              expression: |
+                ([.REQUEST.BODY.client?, .REQUEST.BODY.destination_client?]
+                | map(tostring)
+                | join(" "))
+                | test("(?i)(union\\s+select|select\\s+.*from|or\\s+1=1|--|;|/\\*)")
+
+            # 10. Template / code injection detection
+            - action: drop
+              expression: |
+                ([.REQUEST.BODY.client?, .REQUEST.BODY.destination_client?]
+                | map(tostring)
+                | join(" "))
+                | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+        response:
+          default-action: accept
+          rules:
+            # 1. No stack traces or internal errors
+            - action: drop
+              expression: |
+                  .RESPONSE.BODY.error?
+                  | type == "string"
+                  and test("(?i)(stacktrace|exception|traceback|sql|directus)")
+
+            # 2. Validate response structure
+            - action: drop
+              expression: |
+                (.RESPONSE.BODY.message? | not) or (.RESPONSE.BODY.from? | not) or (.RESPONSE.BODY.to? | not) or (.RESPONSE.BODY["do-transaction"]? | not)
+  - name: transaction
+    type: custom
+    operation: knative:services.v1.serving.knative.dev/transaction?method=POST
+    metadata:
+      firewall:
+        request:
+          default-action: accept
+          rules:
+            # 1. Drop if method is not POST
+            - action: drop
+              expression: |
+                  .REQUEST.METHOD
+                  | ascii_upcase
+                  | . != "POST"
+
+            # 2. Drop if path is not exactly /
+            - action: drop
+              expression: |
+                  .REQUEST.URI.path != "/"
+
+            # 3. Drop if query string is present
+            - action: drop
+              expression: |
+                .REQUEST.URI.query | length > 0
+
+            # 4. Drop if Content-Type is not application/json
+            - action: drop
+              expression: |
+                (
+                  .REQUEST.HEADERS["content-type"] // []
+                  | any(
+                      ascii_downcase
+                      | startswith("application/json")
+                    )
+                  | not
+                )
+
+            # 5. Required fields must exist
+            - action: drop
+              expression: |
+                (.REQUEST.BODY.from? | not) or (.REQUEST.BODY.to? | not) or (.REQUEST.BODY.amount? | not)
+
+            # 6. Amount must be a valid number
+            - action: drop
+              expression: |
+                (.REQUEST.BODY.amount | type != "number" and (type != "string" or test("^[0-9]+(\.[0-9]+)?$") | not))
+
+            # 7. IDs must be valid
+            - action: drop
+              expression: |
+                ([.REQUEST.BODY.from?, .REQUEST.BODY.to?] | map(
+                  select(type == "string" and length >= 1 and test("^[a-zA-Z0-9-]+$"))
+                ) | length != 2
+
+            # 8. Control characters / binary payloads
+            - action: drop
+              expression: |
+                ([.REQUEST.BODY.from?, .REQUEST.BODY.to?, .REQUEST.BODY.amount?]
+                | map(tostring)
+                | join(""))
+                | test("[\x00-\x08\x0B\x0C\x0E-\x1F]")
+
+            # 9. SQL injection detection
+            - action: drop
+              expression: |
+                ([.REQUEST.BODY.from?, .REQUEST.BODY.to?]
+                | map(tostring)
+                | join(" "))
+                | test("(?i)(union\\s+select|select\\s+.*from|or\\s+1=1|--|;|/\\*)")
+
+            # 10. Template / code injection detection
+            - action: drop
+              expression: |
+                ([.REQUEST.BODY.from?, .REQUEST.BODY.to?]
+                | map(tostring)
+                | join(" "))
+                | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
+        response:
+          default-action: accept
+          rules:
+            # 1. No stack traces or internal errors
+            - action: drop
+              expression: |
+                  .RESPONSE.BODY.error?
+                  | type == "string"
+                  and test("(?i)(stacktrace|exception|traceback|sql|directus)")
+
+            # 2. Validate response structure
+            - action: drop
+              expression: |
+                (.RESPONSE.BODY.message? | not) or (.RESPONSE.BODY.success? | not)
+  - name: result
+    type: custom
+    operation: knative:services.v1.serving.knative.dev/result?method=POST
+    metadata:
+      firewall:
+        request:
+          default-action: accept
+          rules:
+            # 1. Drop if method is not POST or GET
+            - action: drop
+              expression: |
+                  (.REQUEST.METHOD
+                  | ascii_upcase
+                  | . != "POST" and . != "GET")
+
+            # 2. Drop if path is not exactly /
+            - action: drop
+              expression: |
+                  .REQUEST.URI.path != "/"
+
+            # 3. Drop if Content-Type is not application/json (for POST only)
+            - action: drop
+              expression: |
+                  (.REQUEST.METHOD
+                  | ascii_upcase
+                  | . == "POST") and
+                  (
+                    .REQUEST.HEADERS["content-type"] // []
+                    | any(
+                        ascii_downcase
+                        | startswith("application/json")
+                      )
+                    | not
+                  )
+
+            # 4. Control characters / binary payloads
+            - action: drop
+              expression: |
+                  (.REQUEST.BODY?
+                  | tostring
+                  | test("[\x00-\x08\x0B\x0C\x0E-\x1F]"))
+
+            # 5. SQL injection detection
+            - action: drop
+              expression: |
+                  (.REQUEST.BODY?
+                  | tostring
+                  | test("(?i)(union\\s+select|select\\s+.*from|or\\s+1=1|--|;|/\\*)"))
+
+            # 6. Template / code injection detection
+            - action: drop
+              expression: |
+                  (.REQUEST.BODY?
+                  | tostring
+                  | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__"))
+        response:
+          default-action: accept
+          rules:
+            # 1. No stack traces or internal errors
+            - action: drop
+              expression: |
+                  .RESPONSE.BODY.error?
+                  | type == "string"
+                  and test("(?i)(stacktrace|exception|traceback|sql|directus)")
+
+            # 2. Validate response structure
+            - action: drop
+              expression: |
+                (.RESPONSE.BODY.message? | not)
+  - name: process-event
+    type: expression
+    operation: |
+      {
+        transformed: (
+          (
+            .headers
+            | to_entries
+            | map(select(.key | ascii_downcase != "host"))
+            | map({("HEADER_" + .key): .value})
+            | add
+          ) + .data
+        )
+      }
 
 states:
   - name: entry-event

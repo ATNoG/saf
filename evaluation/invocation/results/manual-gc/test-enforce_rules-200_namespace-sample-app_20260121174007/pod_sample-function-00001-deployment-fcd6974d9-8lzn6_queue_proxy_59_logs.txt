@@ -1,0 +1,820 @@
+2026-01-21T18:13:04.027Z	DEBUG	firewall/plug.go:306	Request rules structure:
+{
+  "default-action": "accept",
+  "rules": [
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"
+    },
+    {
+      "action": "reject",
+      "expression": "([.REQUEST.BODY.username?] | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")"
+    }
+  ]
+}
+
+2026-01-21T18:13:04.027Z	DEBUG	firewall/plug.go:313	Response rules structure:
+{
+  "default-action": "",
+  "rules": null
+}
+
+{"severity":"INFO","timestamp":"2026-01-21T18:13:04.03312498Z","logger":"queueproxy","caller":"firewall/plug.go:187","message":"Plug firewall: Never use in production","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-fcd6974d9-8lzn6"}
+{"severity":"INFO","timestamp":"2026-01-21T18:13:04.033292258Z","logger":"queueproxy","caller":"firewall/plug.go:192","message":"Before FreeOSMemory: HeapAlloc=3725736 HeapSys=11665408","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-fcd6974d9-8lzn6"}
+{"severity":"INFO","timestamp":"2026-01-21T18:13:04.037556357Z","logger":"queueproxy","caller":"firewall/plug.go:197","message":"After FreeOSMemory: HeapAlloc=2869568 HeapSys=11567104","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-fcd6974d9-8lzn6"}
+{"severity":"INFO","timestamp":"2026-01-21T18:13:04.038013827Z","logger":"queueproxy","caller":"sharedmain/main.go:279","message":"Starting queue-proxy","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-fcd6974d9-8lzn6"}
+{"severity":"INFO","timestamp":"2026-01-21T18:13:04.038087593Z","logger":"queueproxy","caller":"sharedmain/main.go:285","message":"Starting http server metrics:9090","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-fcd6974d9-8lzn6"}
+{"severity":"INFO","timestamp":"2026-01-21T18:13:04.038227218Z","logger":"queueproxy","caller":"sharedmain/main.go:285","message":"Starting http server main:8012","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-fcd6974d9-8lzn6"}
+{"severity":"INFO","timestamp":"2026-01-21T18:13:04.038281297Z","logger":"queueproxy","caller":"sharedmain/main.go:285","message":"Starting http server admin:8022","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-fcd6974d9-8lzn6"}
