@@ -260,8 +260,17 @@ func (p *plug) ProcessAnnotations() bool {
 		return false
 	}
 
-	p.RequestRules = *firewall.Request
-	p.ResponseRules = *firewall.Response
+	if firewall.Request != nil {
+		p.RequestRules = *firewall.Request
+	} else {
+		p.RequestRules = Direction{}
+	}
+
+	if firewall.Response != nil {
+		p.ResponseRules = *firewall.Response
+	} else {
+		p.ResponseRules = Direction{}
+	}
 
 	return true
 }

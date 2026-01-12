@@ -3,7 +3,6 @@ $schema: "https://json-schema.org/draft/2020-12/schema"
 title: "Serverless Workflow Firewall Language"
 description: "A minimal workflow firewall language"
 type: object
-required: [request, response]
 properties:
   request:
     $ref: "#/$defs/rules"
