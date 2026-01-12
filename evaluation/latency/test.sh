@@ -11,7 +11,7 @@ MACHINES=("10.255.30.152" "10.255.30.196" "10.255.30.244")  # IPs of the 3 Kuber
 WAIT_PERIOD=1                                    # Seconds to wait between each request
 NAMESPACES=("sample-app")
 WAIT_REBOOT=5                                  # Seconds to wait after rebooting the cluster machines
-TESTS=("baseline" "enforce")
+TESTS=("enforce")
 NUMBER_TESTS=5
 MAX_RULES=200
 RULES_JUMP_SIZE=100
@@ -65,9 +65,9 @@ EOF
   done
   cat <<EOF
     - action: reject
-        expression: |
-          (.REQUEST.BODY
-          | has("hostnames"))
+      expression: |
+        (.REQUEST.BODY
+        | has("hostnames"))
 EOF
 }
 
@@ -91,7 +91,7 @@ for test in ${TESTS[@]}; do
                 -p '{"data": {"queue-sidecar-image": "'$BASELINE_QUEUE'"}}'
         fi
 
-        for num_rules in $(seq 0 $RULES_JUMP_SIZE $max_num_rules); do
+        for num_rules in $(seq 100 $RULES_JUMP_SIZE $max_num_rules); do
             ##########################
             # 1. REBOOT CLUSTER MACHINES AND WAIT FOR CLUSTER TO BE READY
             ##########################
