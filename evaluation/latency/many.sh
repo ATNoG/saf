@@ -17,10 +17,10 @@ EOF
 EOF
   done
   cat <<EOF
-  - action: reject
-    expression: |
-      (.REQUEST.BODY
-      | has("hostnames"))
+    - action: reject
+      expression: |
+        (.REQUEST.BODY
+        | has("hostnames"))
 EOF
 }
 

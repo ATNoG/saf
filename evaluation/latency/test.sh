@@ -10,7 +10,7 @@ EXTERNAL_IP="10.255.30.152"
 MACHINES=("10.255.30.152" "10.255.30.196" "10.255.30.244")  # IPs of the 3 Kubernetes machines and the code-gen
 WAIT_PERIOD=1                                    # Seconds to wait between each request
 NAMESPACES=("sample-app")
-WAIT_REBOOT=280                                  # Seconds to wait after rebooting the cluster machines
+WAIT_REBOOT=5                                  # Seconds to wait after rebooting the cluster machines
 TESTS=("baseline" "enforce")
 NUMBER_TESTS=5
 MAX_RULES=200
@@ -64,10 +64,10 @@ EOF
 EOF
   done
   cat <<EOF
-  - action: reject
-    expression: |
-      (.REQUEST.BODY
-      | has("hostnames"))
+    - action: reject
+        expression: |
+        (.REQUEST.BODY
+        | has("hostnames"))
 EOF
 }
 
