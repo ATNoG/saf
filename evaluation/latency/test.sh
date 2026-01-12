@@ -66,8 +66,8 @@ EOF
   cat <<EOF
     - action: reject
         expression: |
-        (.REQUEST.BODY
-        | has("hostnames"))
+          (.REQUEST.BODY
+          | has("hostnames"))
 EOF
 }
 
