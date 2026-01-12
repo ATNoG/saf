@@ -7,7 +7,7 @@ The workflow can be analyzed in the figure below.
 
 ## Requirements
 
-Their Kubernetes installation configurations are placed at the root of this repository.
+Their Kubernetes installation configurations are placed at the root of this directory.
 To install them (from the repository root):
 ```bash
 cd mysql-baas; kubectl apply -f mysql.yaml && kubectl apply -f directus.yaml

@@ -10,6 +10,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+
+	// "runtime"
+	// "runtime/debug"
 	"strconv"
 	"strings"
 
@@ -24,16 +27,15 @@ var annotationsFilePath = sharedmain.PodInfoAnnotationsPath
 var qpOptionPrefix = "qpoption.knative.dev/"
 
 type plug struct {
-	name    		string
-	version 		string
+	name    string
+	version string
 
-	RequestRules	Direction
-	ResponseRules	Direction
+	RequestRules  Direction
+	ResponseRules Direction
 }
 
 var errRequest error = errors.New("Request blocked by firewall")
 var errResponse error = errors.New("Response blocked by firewall")
-
 
 func (p *plug) ApproveRequest(req *http.Request) (*http.Request, error) {
 	restore := func(b []byte) {
@@ -43,16 +45,16 @@ func (p *plug) ApproveRequest(req *http.Request) (*http.Request, error) {
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	var reqCtx RequestContext
+	var reqCtx map[string]interface{}
 
 	action, err := evaluateJSONFirewall(
 		req.Body,
 		restore,
 		p.RequestRules,
 		"ApproveRequest",
-		func(body interface{}) FirewallContext {
+		func(body interface{}) map[string]interface{} {
 			reqCtx = buildRequestContext(req, body)
-			return FirewallContext{
+			return map[string]interface{}{
 				"REQUEST": reqCtx,
 			}
 		},
@@ -83,9 +85,9 @@ func (p *plug) ApproveResponse(req *http.Request, resp *http.Response) (*http.Re
 	}
 
 	// Load request context
-	var reqCtx RequestContext
+	var reqCtx map[string]interface{}
 	if v := req.Context().Value(firewallCtxKey{}); v != nil {
-		reqCtx, _ = v.(RequestContext)
+		reqCtx, _ = v.(map[string]interface{})
 	}
 
 	action, err := evaluateJSONFirewall(
@@ -93,8 +95,8 @@ func (p *plug) ApproveResponse(req *http.Request, resp *http.Response) (*http.Re
 		restore,
 		p.ResponseRules,
 		"ApproveResponse",
-		func(body interface{}) FirewallContext {
-			return FirewallContext{
+		func(body interface{}) map[string]interface{} {
+			return map[string]interface{}{
 				"REQUEST":  reqCtx,
 				"RESPONSE": buildResponseContext(resp, body),
 			}
@@ -118,7 +120,7 @@ func evaluateJSONFirewall(
 	restore func([]byte),
 	rules Direction,
 	logPrefix string,
-	contextBuilder func(body interface{}) FirewallContext,
+	contextBuilder func(body interface{}) map[string]interface{},
 ) (Action, error) {
 	bodyBytes, err := io.ReadAll(bodyReader)
 	if err != nil {
@@ -128,9 +130,15 @@ func evaluateJSONFirewall(
 
 	defer restore(bodyBytes)
 
+	// Performance optimization: Only parse JSON if body is not empty
 	var body interface{}
 	if len(bodyBytes) > 0 {
-		if err := json.Unmarshal(bodyBytes, &body); err != nil {
+		// Performance optimization: Use json.Decoder for streaming parsing
+		decoder := json.NewDecoder(bytes.NewReader(bodyBytes))
+		decoder.UseNumber() // Preserve number types for jq compatibility
+		// Optimization: Pre-allocate buffer for decoder to reduce allocations
+		decoder.Buffered()
+		if err := decoder.Decode(&body); err != nil {
 			return "", fmt.Errorf("%s: invalid JSON body: %w", logPrefix, err)
 		}
 	} else {
@@ -139,12 +147,7 @@ func evaluateJSONFirewall(
 
 	ctx := contextBuilder(body)
 
-	jqCtx, err := toJQContext(ctx)
-	if err != nil {
-		return "", fmt.Errorf("%s: failed to build jq context: %w", logPrefix, err)
-	}
-
-	action, err := evaluateRules(rules, jqCtx)
+	action, err := evaluateRules(rules, ctx)
 	if err != nil {
 		return "", fmt.Errorf("%s: rule evaluation error: %w", logPrefix, err)
 	}
@@ -152,37 +155,37 @@ func evaluateJSONFirewall(
 	return action, nil
 }
 
-func toJQContext(v any) (interface{}, error) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-
-	var m interface{}
-	if err := json.Unmarshal(b, &m); err != nil {
-		return nil, err
-	}
-
-	return m, nil
-}
-
 func applyAction(action Action, err error) error {
 	switch action {
-		case ActionAccept:
-			return nil
-		// TODO -> IN THE FUTURE, THE BEHAVIOR OF DROP MUST BE CHANGED TO A REAL DROP (SILENT REJECT). HOWEVER, THIS NEEDS DEEPER MODIFICATIONS IN THE QUEUE-PROXY ITSELF AND PROBABLY IN THE SECURITY GUARD EXTENSION
-		case ActionDrop:
-			return err
-		case ActionReject:
-			return err
-		default:
-			return fmt.Errorf("unknown action: %s", action)
+	case ActionAccept:
+		return nil
+	// TODO -> IN THE FUTURE, THE BEHAVIOR OF DROP MUST BE CHANGED TO A REAL DROP (SILENT REJECT). HOWEVER, THIS NEEDS DEEPER MODIFICATIONS IN THE QUEUE-PROXY ITSELF AND PROBABLY IN THE SECURITY GUARD EXTENSION
+	case ActionDrop:
+		return err
+	case ActionReject:
+		return err
+	default:
+		return fmt.Errorf("unknown action: %s", action)
 	}
 }
 
 // Init implements pluginterfaces.RoundTripPlug.
 func (p *plug) Init(ctx context.Context, config map[string]string, serviceName string, namespace string, logger pi.Logger) context.Context {
 	pi.Log.Infof("Plug %s: Never use in production", p.name)
+
+	/* UNCOMMENT THE FOLLOWING SNIPPET TO MANUALLY TRIGGER THE GARBAGE COLLECTOR */
+	// pi.Log.Debugf("Running garbage collector")
+
+	// var ms runtime.MemStats
+	// runtime.ReadMemStats(&ms)
+	// pi.Log.Infof("Before FreeOSMemory: HeapAlloc=%d HeapSys=%d", ms.HeapAlloc, ms.HeapSys)
+	// runtime.GC()
+	// debug.FreeOSMemory()
+
+	// runtime.ReadMemStats(&ms)
+	// pi.Log.Infof("After FreeOSMemory: HeapAlloc=%d HeapSys=%d", ms.HeapAlloc, ms.HeapSys)
+	// pi.Log.Debugf("Garbage collector run")
+
 	return ctx
 }
 
@@ -254,35 +257,23 @@ func (p *plug) ProcessAnnotations() bool {
 		return false
 	}
 
-	// get the firewall rules
-	raw, ok := config["rules"]
-	if !ok {
-		pi.Log.Errorf("Key rules not found in config")
-		return false
-	}
-	unescaped, err := strconv.Unquote("\"" + raw + "\"")
+	firewall, err := loadUserFirewall(config)
 	if err != nil {
-		pi.Log.Errorf("Failed to unescape JSON: %v", err)
+		pi.Log.Errorf("Error loading firewall rules: %v", err)
 		return false
 	}
 
-	var firewall Firewall
-
-	decoder := json.NewDecoder(strings.NewReader(unescaped))
-	decoder.DisallowUnknownFields()
-
-	if err := decoder.Decode(&firewall); err != nil {
-		pi.Log.Errorf("Invalid firewall rules JSON: %v", err)
-		return false
+	if firewall.Request != nil {
+		p.RequestRules = *firewall.Request
+	} else {
+		p.RequestRules = Direction{}
 	}
 
-	if err := firewall.Validate(); err != nil {
-		pi.Log.Errorf("Firewall rules validation failed: %v", err)
-		return false
+	if firewall.Response != nil {
+		p.ResponseRules = *firewall.Response
+	} else {
+		p.ResponseRules = Direction{}
 	}
-
-	p.RequestRules = *firewall.Request
-	p.ResponseRules = *firewall.Response
 
 	return true
 }

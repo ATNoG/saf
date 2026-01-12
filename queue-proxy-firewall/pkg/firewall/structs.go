@@ -29,9 +29,10 @@ const (
 )
 
 type Rule struct {
-	Action     Action      `json:"action"`
-	Expression string      `json:"expression,omitempty"`
-	Schema     *BodySchema `json:"schema,omitempty"`
+	Action     			Action      `json:"action"`
+	Expression 			string      `json:"expression,omitempty"`
+	Schema     			*BodySchema `json:"schema,omitempty"`
+	CompiledQuery      	*gojq.Code `json:"-"` // Parsed query for later usage
 }
 
 type BodySchema struct {
@@ -61,9 +62,19 @@ func (r *Rule) Validate() error {
 	}
 
 	// Validate jq syntax early (IMPORTANT)
-	if _, err := gojq.Parse(r.Expression); err != nil {
+	parsedQuery, err := gojq.Parse(r.Expression)
+	if err != nil {
 		return fmt.Errorf("invalid jq expression: %w", err)
 	}
+	
+	// Compile the parsed query
+	code, err := gojq.Compile(parsedQuery)
+	if err != nil {
+		return fmt.Errorf("could not compile the jq query: %w", err)
+	}
+
+	// Save the compiled query for later usage
+	r.CompiledQuery = code
 
 	// Schema validation (if present)
 	if r.Schema != nil {

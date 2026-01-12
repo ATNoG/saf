@@ -4,39 +4,27 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
-	"github.com/itchyny/gojq"
 	pi "knative.dev/security-guard/pkg/pluginterfaces"
 )
 
-// func evaluateRules(dir Direction, body interface{}) (Action, error) {
-// 	for i, rule := range dir.Rules {
-// 		if rule.Body == nil {
-// 			continue
-// 		}
-
-// 		match, err := evaluateBodyRule(rule.Body, body)
-// 		if err != nil {
-// 			return "", fmt.Errorf("rule[%d]: %w", i, err)
-// 		}
-
-// 		if match {
-// 			pi.Log.Debugf("Rule[%d] matched → action=%s", i, rule.Body.Action)
-// 			return rule.Body.Action, nil
-// 		}
-// 	}
-
-// 	// No rule matched → default action
-// 	return dir.DefaultAction, nil
-// }
-
 func evaluateRules(dir Direction, ctx interface{}) (Action, error) {
+	var totalJQTime time.Duration
+
+	// If the user did not specified rules for a specific direction, the requests must be accepted
+	if dir.Rules == nil {
+		return ActionAccept, nil
+	}
+
 	for i := range dir.Rules {
 		rule := &dir.Rules[i]
 
 		pi.Log.Debugf("Checking rule expression: %s", rule.Expression)
 
+		start := time.Now()
 		match, err := evaluateRule(rule, ctx)
+		totalJQTime += time.Since(start)
 		if err != nil {
 			return "", fmt.Errorf("rules[%d]: %w", i, err)
 		}
@@ -51,32 +39,33 @@ func evaluateRules(dir Direction, ctx interface{}) (Action, error) {
 			continue // non-terminal
 
 		case ActionAccept, ActionDrop, ActionReject:
-			return rule.Action, nil
+			return rule.Action, nil // immediate return on terminal action
 		}
 	}
 
+	// Only print timing info in debug mode to avoid performance impact in production
+	// Note: We can't use IsDebugEnabled() as it's not available, so we'll always print for now
+	// In a production environment, this should be configurable
+	fmt.Printf("Total jq processing time: %v\n", totalJQTime)
 	return dir.DefaultAction, nil
 }
-
 
 func evaluateRule(rule *Rule, ctx interface{}) (bool, error) {
 	if strings.TrimSpace(rule.Expression) == "" {
 		return false, fmt.Errorf("missing jq expression")
 	}
 
-	query, err := gojq.Parse(rule.Expression)
-	if err != nil {
-		return false, fmt.Errorf("invalid jq expression: %w", err)
-	}
-
-	iter := query.Run(ctx)
+	// Use the pre-parsed query from the rule
+	iter := rule.CompiledQuery.Run(ctx)
 
 	var (
 		result    bool
 		hasResult bool
 	)
 
-	for {
+	// Optimize: Limit the number of results we process to avoid unnecessary iterations
+	// Since jq expressions should return a single boolean, we only need to check the first result
+	for i := 0; i < 2; i++ { // Check at most 2 results to ensure we get exactly one
 		v, ok := iter.Next()
 		if !ok {
 			break
@@ -105,7 +94,6 @@ func evaluateRule(rule *Rule, ctx interface{}) (bool, error) {
 
 	return result, nil
 }
-
 
 func logRuleHit(rule *Rule, ctx interface{}) {
 	ctxJSON, err := json.Marshal(ctx)
