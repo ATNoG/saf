@@ -35,6 +35,7 @@ func evaluateRules(dir Direction, ctx interface{}) (Action, error) {
 		rule := &dir.Rules[i]
 
 		pi.Log.Debugf("Checking rule expression: %s", rule.Expression)
+		fmt.Printf("Checking rule expression: %s\n", rule.Expression)
 
 		match, err := evaluateRule(rule, ctx)
 		if err != nil {

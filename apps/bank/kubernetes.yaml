@@ -44,7 +44,7 @@ spec:
     metadata:
       annotations:
         # features.knative.dev/queueproxy-podinfo: enabled
-        qpoption.knative.dev/flow-activate: enable
+        
     spec:
       containers:
         - image: ghcr.io/atnog/serverless-workflow-firewall/bank-app/login

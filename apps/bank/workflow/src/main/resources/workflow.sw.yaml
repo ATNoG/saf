@@ -20,6 +20,40 @@ functions:
         request:
           default-action: accept
           rules:
+            # 1. Drop if method is not POST
+            - action: drop
+              expression: |
+                  .REQUEST.METHOD
+                  | ascii_upcase
+                  | . != "POST"
+
+            # 3. Drop if path is not exactly /
+            - action: drop
+              expression: |
+                  .REQUEST.URI.path != "/"
+
+            # 4. Drop if query string is present (login should not use query params)
+            - action: drop
+              expression: |
+                .REQUEST.URI.query | length > 0
+
+            # 5. Drop if Content-Type is not application/json
+            - action: drop
+              expression: |
+                (
+                  .REQUEST.HEADERS["content-type"] // []
+                  | any(
+                      ascii_downcase
+                      | startswith("application/json")
+                    )
+                  | not
+                )
+            # 6. Drop if Authorization header is present (login should not have one)
+            - action: drop
+              expression: |
+                  .REQUEST.HEADERS
+                  | has("authorization")
+
             # 1. Required fields must exist
             - action: drop
               expression: |

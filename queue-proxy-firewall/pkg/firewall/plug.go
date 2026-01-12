@@ -254,30 +254,9 @@ func (p *plug) ProcessAnnotations() bool {
 		return false
 	}
 
-	// get the firewall rules
-	raw, ok := config["rules"]
-	if !ok {
-		pi.Log.Errorf("Key rules not found in config")
-		return false
-	}
-	unescaped, err := strconv.Unquote("\"" + raw + "\"")
+	firewall, err := loadUserFirewall(config)
 	if err != nil {
-		pi.Log.Errorf("Failed to unescape JSON: %v", err)
-		return false
-	}
-
-	var firewall Firewall
-
-	decoder := json.NewDecoder(strings.NewReader(unescaped))
-	decoder.DisallowUnknownFields()
-
-	if err := decoder.Decode(&firewall); err != nil {
-		pi.Log.Errorf("Invalid firewall rules JSON: %v", err)
-		return false
-	}
-
-	if err := firewall.Validate(); err != nil {
-		pi.Log.Errorf("Firewall rules validation failed: %v", err)
+		pi.Log.Errorf("Error loading firewall rules: %v", err)
 		return false
 	}
 

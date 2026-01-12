@@ -38,15 +38,19 @@ spec:
   template:
     metadata:
       annotations:
-        qpoption.knative.dev/flow-activate: enable
-        qpoption.knative.dev/firewall-config-rules: '{"request": {"default-action":
-          "accept", "rules": [{"action": "drop", "expression": "(.REQUEST.BODY.username?
-          | not) or (.REQUEST.BODY.password? | not)\n"}, {"action": "drop", "expression":
-          ".REQUEST.BODY.username?\n| (type != \"string\"\n  or length < 3\n  or length
-          > 64\n  or test(\"^[a-zA-Z0-9._-]+$\") | not)\n"}, {"action": "drop", "expression":
-          ".REQUEST.BODY.password?\n| (type != \"string\"\nor length < 8\nor length
-          > 128)\n"}, {"action": "drop", "expression": ".REQUEST.BODY.username?\n|
-          test(\"(?i)(union\\\\s+select|select\\\\s+.*from|or\\\\s+1=1|--|;|/\\\\*)\")\n"},
+        qpoption.knative.dev/firewall-config-rules-json: '{"request": {"default-action":
+          "accept", "rules": [{"action": "drop", "expression": ".REQUEST.METHOD\n|
+          ascii_upcase\n| . != \"POST\"\n"}, {"action": "drop", "expression": ".REQUEST.URI.path
+          != \"/\"\n"}, {"action": "drop", "expression": ".REQUEST.URI.query | length
+          > 0\n"}, {"action": "drop", "expression": "(\n  .REQUEST.HEADERS[\"content-type\"]
+          // []\n  | any(\n      ascii_downcase\n      | startswith(\"application/json\")\n    )\n  |
+          not\n)\n"}, {"action": "drop", "expression": ".REQUEST.HEADERS\n| has(\"authorization\")\n"},
+          {"action": "drop", "expression": "(.REQUEST.BODY.username? | not) or (.REQUEST.BODY.password?
+          | not)\n"}, {"action": "drop", "expression": ".REQUEST.BODY.username?\n|
+          (type != \"string\"\n  or length < 3\n  or length > 64\n  or test(\"^[a-zA-Z0-9._-]+$\")
+          | not)\n"}, {"action": "drop", "expression": ".REQUEST.BODY.password?\n|
+          (type != \"string\"\nor length < 8\nor length > 128)\n"}, {"action": "drop",
+          "expression": ".REQUEST.BODY.username?\n| test(\"(?i)(union\\\\s+select|select\\\\s+.*from|or\\\\s+1=1|--|;|/\\\\*)\")\n"},
           {"action": "drop", "expression": "([.REQUEST.BODY.username?, .REQUEST.BODY.password?]
           | map(tostring) | join(\" \")) | test(\"{{|}}|{%-|-%}|__class__|__mro__|__subclasses__\")\n"},
           {"action": "drop", "expression": "([.REQUEST.BODY.username?, .REQUEST.BODY.password?]\n|
