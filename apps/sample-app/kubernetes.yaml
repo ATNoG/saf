@@ -1,0 +1,28 @@
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: sample-app
+# ---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: entry-point
+  namespace: sample-app
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/min-scale: "1"
+        autoscaling.knative.dev/max-scale: "1"
+        qpoption.knative.dev/firewall-activate: enable
+        qpoption.knative.dev/firewall-config-rules: |
+          request:
+            default-action: accept
+            rules:
+              - action: drop
+                expression: |
+                    ([.REQUEST.BODY]
+                    | has("hostnames")
+    spec:
+      containers:
+        - image: ghcr.io/atnog/serverless-workflow-firewall/sample-app/entry-point
