@@ -58,7 +58,7 @@ EOF
 
   for i in $(seq 1 "$1"); do
     cat <<EOF
-    - action: expression
+    - action: reject
       expression: |
         ([.REQUEST.BODY.username?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
 EOF
