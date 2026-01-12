@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REGISTRY=ghcr.io/<organization>/serverless-workflow-firewall/sample-app
+REGISTRY=ghcr.io/atnog/serverless-workflow-firewall/sample-app
 paths=(sample-function)
 
 for p in ${paths[@]}; do

@@ -4,17 +4,17 @@
 ##########################
 # CONSTANTS – CONFIGURE THESE AS NEEDED
 ##########################
-SSH_PASSWORD=""                     # SSH password for the Kubernetes cluster machines
+SSH_PASSWORD="olaadeus"                     # SSH password for the Kubernetes cluster machines
 MACHINE_USER="ubuntu"                     # SSH user (assumed to have sudo privileges for reboot)
 EXTERNAL_IP="10.255.30.152"
 MACHINES=("10.255.30.152" "10.255.30.196" "10.255.30.244")  # IPs of the 3 Kubernetes machines and the code-gen
 WAIT_PERIOD=1                                    # Seconds to wait between each request
 NAMESPACES=("sample-app")
-WAIT_REBOOT=5                                  # Seconds to wait after rebooting the cluster machines
-TESTS=("enforce")
-NUMBER_TESTS=5
-MAX_RULES=200
-RULES_JUMP_SIZE=100
+WAIT_REBOOT=300                                  # Seconds to wait after rebooting the cluster machines
+TESTS=("baseline" "enforce")
+NUMBER_TESTS=550
+MAX_RULES=500
+RULES_JUMP_SIZE=10
 ENTRY_POINT="sample-function"
 ENFORCER_QUEUE="ghcr.io/atnog/serverless-workflow-firewall/queue:latest"
 BASELINE_QUEUE="gcr.io/knative-releases/knative.dev/serving/cmd/queue:v1.19.5"
@@ -63,12 +63,12 @@ EOF
         ([.REQUEST.BODY.username?] | map(tostring) | join(" ")) | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__")
 EOF
   done
-  cat <<EOF
-    - action: reject
-      expression: |
-        (.REQUEST.BODY
-        | has("hostnames"))
-EOF
+#   cat <<EOF
+#     - action: reject
+#       expression: |
+#         (.REQUEST.BODY
+#         | has("hostnames"))
+# EOF
 }
 
 ##########################
@@ -91,12 +91,12 @@ for test in ${TESTS[@]}; do
                 -p '{"data": {"queue-sidecar-image": "'$BASELINE_QUEUE'"}}'
         fi
 
-        for num_rules in $(seq 100 $RULES_JUMP_SIZE $max_num_rules); do
+        for num_rules in $(seq 0 $RULES_JUMP_SIZE $max_num_rules); do
             ##########################
             # 1. REBOOT CLUSTER MACHINES AND WAIT FOR CLUSTER TO BE READY
             ##########################
-            # reboot_machines
-            # wait_for_cluster
+            reboot_machines
+            wait_for_cluster
 
             if [[ $num_rules -eq 0 ]]; then
                 yq -i '
@@ -107,7 +107,8 @@ for test in ${TESTS[@]}; do
                 del(.spec.template.metadata.annotations."qpoption.knative.dev/firewall-config-rules")
                 ' sample-app/kubernetes.yaml
             else
-                RULES="$(generate_rules $(( num_rules - 1 )))" \
+                # $(( num_rules - 1 ))
+                RULES="$(generate_rules)" \
                 yq -i '
                 .spec.template.metadata.annotations |= {} |
                 .spec.template.metadata.annotations."autoscaling.knative.dev/min-scale" = "1" |
