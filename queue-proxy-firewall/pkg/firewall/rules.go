@@ -9,33 +9,19 @@ import (
 	pi "knative.dev/security-guard/pkg/pluginterfaces"
 )
 
-// func evaluateRules(dir Direction, body interface{}) (Action, error) {
-// 	for i, rule := range dir.Rules {
-// 		if rule.Body == nil {
-// 			continue
-// 		}
-
-// 		match, err := evaluateBodyRule(rule.Body, body)
-// 		if err != nil {
-// 			return "", fmt.Errorf("rule[%d]: %w", i, err)
-// 		}
-
-// 		if match {
-// 			pi.Log.Debugf("Rule[%d] matched → action=%s", i, rule.Body.Action)
-// 			return rule.Body.Action, nil
-// 		}
-// 	}
-
-// 	// No rule matched → default action
-// 	return dir.DefaultAction, nil
-// }
 
 func evaluateRules(dir Direction, ctx interface{}) (Action, error) {
+
+	// If the user did not specified rules for a specific direction, the requests must be accepted
+	if dir.Rules == nil {
+		return ActionAccept, nil
+	}
+
 	for i := range dir.Rules {
 		rule := &dir.Rules[i]
 
 		pi.Log.Debugf("Checking rule expression: %s", rule.Expression)
-		fmt.Printf("Checking rule expression: %s\n", rule.Expression)
+		// fmt.Printf("Checking rule expression: %s\n", rule.Expression)
 
 		match, err := evaluateRule(rule, ctx)
 		if err != nil {
