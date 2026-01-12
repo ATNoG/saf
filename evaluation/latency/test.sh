@@ -182,7 +182,7 @@ for test in ${TESTS[@]}; do
             done
 
             git add .
-            git commit -s -m "new latency results for $test"
+            git commit -s -m "new latency results for $test and $num_rules rules"
             git push
 
             # REMOVE EVERYTHING BEFORE NEXT ITERATION
