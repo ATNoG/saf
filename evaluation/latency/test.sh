@@ -108,7 +108,7 @@ for test in ${TESTS[@]}; do
                 ' sample-app/kubernetes.yaml
             else
                 # $(( num_rules - 1 ))
-                RULES="$(generate_rules)" \
+                RULES="$(generate_rules $num_rules)" \
                 yq -i '
                 .spec.template.metadata.annotations |= {} |
                 .spec.template.metadata.annotations."autoscaling.knative.dev/min-scale" = "1" |
