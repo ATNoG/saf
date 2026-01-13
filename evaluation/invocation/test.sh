@@ -14,7 +14,7 @@ WAIT_REBOOT=300                                  # Seconds to wait after rebooti
 TESTS=("baseline" "enforce")
 NUMBER_TESTS=550
 MAX_RULES=500
-RULES_JUMP_SIZE=10
+RULES_JUMP_SIZE=50
 ENTRY_POINT="sample-function"
 ENFORCER_QUEUE="ghcr.io/atnog/serverless-workflow-firewall/queue:latest"
 BASELINE_QUEUE="gcr.io/knative-releases/knative.dev/serving/cmd/queue:v1.19.5"
@@ -120,6 +120,7 @@ for test in ${TESTS[@]}; do
             test_timestamp=$(date +%Y%m%d%H%M%S)
             test_dir="${BASE_RESULT_DIR}/test-${test}_rules-${num_rules}_namespace-${namespace}_${test_timestamp}"
             mkdir -p "$test_dir"
+            result_trace_file="${test_dir}/requests_trace.txt"
 
             while true; do
                 kubectl create namespace $namespace
@@ -156,42 +157,40 @@ for test in ${TESTS[@]}; do
 
             echo "Starting tests"
             for (( i=1; i<=NUMBER_TESTS; i++ )); do
-                data='{"hostnames": ["test"]}'
-                curl http://$ENTRY_POINT.$namespace.$EXTERNAL_IP.sslip.io --data "$data" -H 'Content-Type: application/json' -v
+                while true; do
+                    kubectl create namespace $namespace
+                    if [ "$?" -eq 0 ]; then
+                        break
+                    else
+                        echo "Namespace not created with success; trying again..."
+                        sleep 60
+                    fi
+                done
+
+                cd $namespace/
+                start_invocation=$(date +%s%3N)
+                kubectl apply -f kubernetes.yaml
+                kubectl wait --for=condition=ready ksvc $ENTRY_POINT -n $namespace --timeout=1200s
+                end_invocation=$(date +%s%3N)
 
                 sleep "$WAIT_PERIOD"
-            done
 
-            sleep 60
+                start_termination=$(date +%s%3N)
+                pod=$(kubectl get pods -l serving.knative.dev/service=$ENTRY_POINT -n $namespace -o jsonpath='{.items[*].metadata.name}')
+                kubectl delete -f kubernetes.yaml
+                kubectl wait --for=delete pod/$pod -n $namespace --timeout=1200s
+                end_termination=$(date +%s%3N)
+                cd ..
 
-            echo "Saving logs from pods"
-            pods_to_log=$(kubectl get pods -n "$namespace" --no-headers -o custom-columns=NAME:.metadata.name || true)
-            for pod in $pods_to_log; do
-                pod_log_file_queue="${test_dir}/pod_${pod}_queue_proxy_logs.txt"
-                echo "Saving logs for pod $pod and container queue-proxy to $pod_log_file_queue"
-                kubectl logs "$pod" -c queue-proxy -n "$namespace" > "$pod_log_file_queue"
+                echo "$test,$i,$start_invocation,$end_invocation,$start_termination,$end_termination" >> "$result_trace_file"
 
-                pod_log_file_user="${test_dir}/pod_${pod}_user_container_logs.txt"
-                echo "Saving logs for pod $pod and container user-container to $pod_log_file_user"
-                kubectl logs "$pod" -c user-container -n "$namespace" > "$pod_log_file_user"
-
-                # Check if the pod has a previous instance and save its logs
-                # echo "Saving logs for previous instance of pod $pod" >> "$pod_log_file"
-                # kubectl logs "$pod" -c user-container -n "$namespace" --previous >> "$pod_log_file"
+                # REMOVE EVERYTHING BEFORE NEXT ITERATION
+                kubectl delete namespace $NAMESPACE
             done
 
             git add .
-            git commit -s -m "new latency results for $test and $num_rules rules"
+            git commit -s -m "new invocation results for $test"
             git push
-
-            # REMOVE EVERYTHING BEFORE NEXT ITERATION
-            cd $namespace/
-            kubectl delete -f kubernetes.yaml
-            if [[ $namespace == "long-sequence" || $namespace == "long-parallel" ]]; then
-                kubectl delete -f functions.yaml
-            fi
-            cd ..
-            kubectl delete namespace $namespace
         done
     done
 done
