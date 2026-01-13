@@ -11,8 +11,8 @@ MACHINES=("10.255.30.152" "10.255.30.196" "10.255.30.244")  # IPs of the 3 Kuber
 WAIT_PERIOD=1                                    # Seconds to wait between each request
 NAMESPACES=("sample-app")
 WAIT_REBOOT=300                                  # Seconds to wait after rebooting the cluster machines
-TESTS=("baseline" "enforce")
-NUMBER_TESTS=550
+TESTS=("enforce")           # "baseline" 
+NUMBER_TESTS=150
 MAX_RULES=500
 RULES_JUMP_SIZE=50
 ENTRY_POINT="sample-function"
@@ -122,39 +122,6 @@ for test in ${TESTS[@]}; do
             mkdir -p "$test_dir"
             result_trace_file="${test_dir}/requests_trace.txt"
 
-            while true; do
-                kubectl create namespace $namespace
-                if [ "$?" -eq 0 ]; then
-                    break
-                else
-                    echo "Namespace not created with success; trying again..."
-                    sleep 60
-                fi
-            done
-
-            cd $namespace/
-            kubectl apply -f kubernetes.yaml
-            cd ..
-
-            echo "Waiting for application to be ready (only one pod starting with 'result')..."
-            needed_pods=1
-            while true; do
-                # Count running pods
-                number_running=$(kubectl get pods -n "$namespace" | grep -c 'Running')
-                # Count terminating pods
-                number_terminating=$(kubectl get pods -n "$namespace" | grep -c 'Terminating')
-
-                if [[ $number_running -eq $needed_pods && $number_terminating -eq 0 ]]; then
-                    echo "Application is ready: $number_running running pods, no terminating pods."
-                    break
-                else
-                    echo "Waiting: $number_running running pods, $number_terminating terminating pods (need $needed_pods running). Retrying in 5 seconds..."
-                    sleep 5
-                fi
-            done
-
-            sleep 60
-
             echo "Starting tests"
             for (( i=1; i<=NUMBER_TESTS; i++ )); do
                 while true; do
@@ -185,7 +152,7 @@ for test in ${TESTS[@]}; do
                 echo "$test,$i,$start_invocation,$end_invocation,$start_termination,$end_termination" >> "$result_trace_file"
 
                 # REMOVE EVERYTHING BEFORE NEXT ITERATION
-                kubectl delete namespace $NAMESPACE
+                kubectl delete namespace $namespace
             done
 
             git add .
