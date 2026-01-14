@@ -212,7 +212,7 @@ for app in ["sample-app"]:
 
     plt.tight_layout()
     plt.legend(fontsize=12 * SIZE_RATION)
-    plt.savefig(f"{app}.pdf", bbox_inches='tight', pad_inches=0)
+    plt.savefig(f"{app}.pdf", bbox_inches='tight')
     plt.show()
 
     print(f"\n=== difference Summary (difference) for {app} ===\n")
