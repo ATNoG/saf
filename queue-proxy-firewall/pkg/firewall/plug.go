@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -299,6 +300,10 @@ func init() {
 	} else {
 		pi.Log.Debugf("Response rules structure:\n%s\n", string(prettyResponse))
 	}
+
+	pi.Log.Debugf("Running garbage collector")
+	runtime.GC()
+	pi.Log.Debugf("Garbage collector run")
 
 	pi.RegisterPlug(p)
 }
