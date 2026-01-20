@@ -142,6 +142,26 @@ for test in ${TESTS[@]}; do
 
                 sleep "$WAIT_PERIOD"
 
+                echo "Saving logs from pods"
+                pods_to_log=$(kubectl get pods -n "$namespace" --no-headers -o custom-columns=NAME:.metadata.name || true)
+                cd ..
+                for pod in $pods_to_log; do
+                    pod_log_file_queue="${test_dir}/pod_${pod}_queue_proxy_${i}_logs.txt"
+                    echo "Saving logs for pod $pod and container queue-proxy to $pod_log_file_queue"
+                    kubectl logs "$pod" -c queue-proxy -n "$namespace" > "$pod_log_file_queue"
+
+                    pod_log_file_user="${test_dir}/pod_${pod}_user_container_${i}_logs.txt"
+                    echo "Saving logs for pod $pod and container user-container to $pod_log_file_user"
+                    kubectl logs "$pod" -c user-container -n "$namespace" > "$pod_log_file_user"
+
+                    # Check if the pod has a previous instance and save its logs
+                    # echo "Saving logs for previous instance of pod $pod" >> "$pod_log_file"
+                    # kubectl logs "$pod" -c user-container -n "$namespace" --previous >> "$pod_log_file"
+                done
+                cd $namespace/
+
+                sleep "$WAIT_PERIOD"
+
                 start_termination=$(date +%s%3N)
                 pod=$(kubectl get pods -l serving.knative.dev/service=$ENTRY_POINT -n $namespace -o jsonpath='{.items[*].metadata.name}')
                 kubectl delete -f kubernetes.yaml
