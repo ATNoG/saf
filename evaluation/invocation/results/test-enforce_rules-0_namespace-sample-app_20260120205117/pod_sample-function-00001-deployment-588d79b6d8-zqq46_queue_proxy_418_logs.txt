@@ -1,0 +1,37 @@
+2026-01-21T00:40:36.455Z	ERROR	firewall/plug.go:272	Error loading firewall rules: no firewall rules provided
+ATNoG/queue-proxy-firewall/pkg/firewall.(*plug).ProcessAnnotations
+	ATNoG/queue-proxy-firewall/pkg/firewall/plug.go:272
+ATNoG/queue-proxy-firewall/pkg/firewall.init.0
+	ATNoG/queue-proxy-firewall/pkg/firewall/plug.go:297
+runtime.doInit1
+	runtime/proc.go:7670
+runtime.doInit
+	runtime/proc.go:7637
+runtime.main
+	runtime/proc.go:256
+2026-01-21T00:40:36.455Z	ERROR	firewall/plug.go:298	Error reading the Pod annotations
+ATNoG/queue-proxy-firewall/pkg/firewall.init.0
+	ATNoG/queue-proxy-firewall/pkg/firewall/plug.go:298
+runtime.doInit1
+	runtime/proc.go:7670
+runtime.doInit
+	runtime/proc.go:7637
+runtime.main
+	runtime/proc.go:256
+2026-01-21T00:40:36.459Z	WARN	pluginterfaces/pluginterfaces.go:87	Image was created with qpoption package but without a plug
+knative.dev/security-guard/pkg/pluginterfaces.GetPlug
+	knative.dev/security-guard@v0.6.1/pkg/pluginterfaces/pluginterfaces.go:87
+knative.dev/security-guard/pkg/qpoption.(*GateQPOption).Setup
+	knative.dev/security-guard@v0.6.1/pkg/qpoption/qpoption.go:161
+knative.dev/serving/pkg/queue/sharedmain.applyOptions
+	knative.dev/serving@v0.47.1-0.20251218010245-2b621899e32e/pkg/queue/sharedmain/main.go:340
+knative.dev/serving/pkg/queue/sharedmain.Main
+	knative.dev/serving@v0.47.1-0.20251218010245-2b621899e32e/pkg/queue/sharedmain/main.go:221
+main.main
+	ATNoG/queue-proxy-firewall/cmd/queue/main.go:16
+runtime.main
+	runtime/proc.go:285
+{"severity":"INFO","timestamp":"2026-01-21T00:40:36.460239367Z","logger":"queueproxy","caller":"sharedmain/main.go:279","message":"Starting queue-proxy","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-588d79b6d8-zqq46"}
+{"severity":"INFO","timestamp":"2026-01-21T00:40:36.460351376Z","logger":"queueproxy","caller":"sharedmain/main.go:285","message":"Starting http server metrics:9090","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-588d79b6d8-zqq46"}
+{"severity":"INFO","timestamp":"2026-01-21T00:40:36.460455956Z","logger":"queueproxy","caller":"sharedmain/main.go:285","message":"Starting http server admin:8022","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-588d79b6d8-zqq46"}
+{"severity":"INFO","timestamp":"2026-01-21T00:40:36.4604621Z","logger":"queueproxy","caller":"sharedmain/main.go:285","message":"Starting http server main:8012","commit":"caa4df5-dirty","knative.dev/key":"sample-app/sample-function-00001","knative.dev/pod":"sample-function-00001-deployment-588d79b6d8-zqq46"}
