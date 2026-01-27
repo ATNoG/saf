@@ -11,7 +11,7 @@ MACHINES=("10.255.30.152" "10.255.30.196" "10.255.30.244")  # IPs of the 3 Kuber
 WAIT_PERIOD=1                                    # Seconds to wait between each request
 NAMESPACES=("sample-app")
 WAIT_REBOOT=300                                  # Seconds to wait after rebooting the cluster machines
-TESTS=("baseline", "enforce")           # "baseline" 
+TESTS=("enforce")           # "baseline" 
 NUMBER_TESTS=550
 MAX_RULES=500
 RULES_JUMP_SIZE=50
@@ -90,7 +90,7 @@ for test in ${TESTS[@]}; do
                 -p '{"data": {"queue-sidecar-image": "'$BASELINE_QUEUE'"}}'
         fi
 
-        for num_rules in $(seq 0 $RULES_JUMP_SIZE $max_num_rules); do
+        for num_rules in $(seq 100 50 150); do       # $(seq 0 $RULES_JUMP_SIZE $max_num_rules)
             ##########################
             # 1. REBOOT CLUSTER MACHINES AND WAIT FOR CLUSTER TO BE READY
             ##########################
