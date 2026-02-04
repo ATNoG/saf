@@ -7,15 +7,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 COMPARISON = 6.5
-SIZE: tuple[Literal[5], Literal[1]] = (10, 3)
+SIZE: tuple[Literal[5], Literal[1]] = (10, 3.7)
 SIZE_RATION = SIZE[0] / COMPARISON
-
-# ------------ PARAMETERS ------------
-FILE = "results/requests_trace.txt"
-BASE_DIR = "results"
-discard_first_n = 0
-z_value = 3   # 99.7% (3*std) CI z-score
-# -------------------------------------
+RESULTS = "automatic-gc"           # automatic-gc/manual-gc
+BASE_DIR = f"results/{RESULTS}"
 
 # Regex for function extraction: pod_{name}-{5digits}-deployment...
 FUNC_RE = re.compile(r"pod_([a-zA-Z0-9\-]+)-\d{5}-deployment")
@@ -108,9 +103,18 @@ merged["finishing_delta"] = (
     merged["finishing"] - merged["finishing_baseline"]
 )
 
+<<<<<<< HEAD
 sns.set(style="whitegrid")
 
 sns.pointplot(
+=======
+
+
+sns.set(style="whitegrid")
+
+plt.figure(figsize=SIZE)
+ax = sns.pointplot(
+>>>>>>> ddd8fce0b8a98d5bbdb22fcc8efc8df789a53daf
     data=merged,
     x="num_rules",
     y="startup_delta",
@@ -121,11 +125,26 @@ sns.pointplot(
     capsize=.4
 )
 
+<<<<<<< HEAD
 plt.ylabel("Startup Overhead (s)")
 plt.xlabel("Number of Rules")
 plt.show()
 
 sns.pointplot(
+=======
+ax.yaxis.label.set_fontsize(15 * SIZE_RATION)
+ax.xaxis.label.set_fontsize(15 * SIZE_RATION)
+ax.tick_params(labelsize=12 * SIZE_RATION)
+plt.tight_layout()
+plt.ylabel("Deployment\nDifference (s)")
+plt.xlabel("Number of Rules")
+plt.legend(fontsize=12 * SIZE_RATION)
+plt.savefig(f"deployment-{RESULTS}.pdf", bbox_inches='tight', pad_inches=0)
+plt.show()
+
+plt.figure(figsize=SIZE)
+ax = sns.pointplot(
+>>>>>>> ddd8fce0b8a98d5bbdb22fcc8efc8df789a53daf
     data=merged,
     x="num_rules",
     y="finishing_delta",
@@ -136,6 +155,7 @@ sns.pointplot(
     capsize=.4
 )
 
+<<<<<<< HEAD
 plt.ylabel("Teardown Overhead (s)")
 plt.xlabel("Number of Rules")
 plt.show()
@@ -203,3 +223,28 @@ plt.show()
 # plt.tight_layout()
 # plt.savefig(f"invocation_finish.pdf", bbox_inches='tight', pad_inches=0)
 # plt.show()
+=======
+ax.yaxis.label.set_fontsize(15 * SIZE_RATION)
+ax.xaxis.label.set_fontsize(15 * SIZE_RATION)
+ax.tick_params(labelsize=12 * SIZE_RATION)
+plt.tight_layout()
+plt.ylabel("Teardown\nDifference (s)")
+plt.xlabel("Number of Rules")
+plt.legend(fontsize=12 * SIZE_RATION, loc="upper left")
+plt.savefig(f"teardown-{RESULTS}.pdf", bbox_inches='tight', pad_inches=0)
+plt.show()
+
+summary = (
+    merged
+    .groupby("num_rules")
+    .agg(
+        startup_mean=("startup_delta", "mean"),
+        startup_std=("startup_delta", "std"),
+        teardown_mean=("finishing_delta", "mean"),
+        teardown_std=("finishing_delta", "std"),
+    )
+    .reset_index()
+)
+
+print(summary)
+>>>>>>> ddd8fce0b8a98d5bbdb22fcc8efc8df789a53daf

@@ -90,7 +90,7 @@ for test in ${TESTS[@]}; do
                 -p '{"data": {"queue-sidecar-image": "'$BASELINE_QUEUE'"}}'
         fi
 
-        for num_rules in $(seq 100 50 100); do       # $(seq 0 $RULES_JUMP_SIZE $max_num_rules)
+        for num_rules in $(seq 0 $RULES_JUMP_SIZE $max_num_rules); do
             ##########################
             # 1. REBOOT CLUSTER MACHINES AND WAIT FOR CLUSTER TO BE READY
             ##########################

@@ -17,7 +17,7 @@ MAX_RULES=500
 RULES_JUMP_SIZE=10
 ENTRY_POINT="sample-function"
 ENFORCER_QUEUE="ghcr.io/atnog/serverless-workflow-firewall/queue:latest"
-BASELINE_QUEUE="gcr.io/knative-releases/knative.dev/serving/cmd/queue:v1.19.5"
+BASELINE_QUEUE="gcr.io/knative-releases/knative.dev/serving/cmd/queue:v1.20.1"
 
 # Base directory to store test results (trace file and pod logs)
 BASE_RESULT_DIR="./results"
