@@ -191,15 +191,8 @@ for app in ["sample-app"]:
         y=y_fit,
         color=sns.color_palette("colorblind")[1],
         linewidth=2,
-        label=f"y = {a:.4f}x + {b:.4f}"
+        label=f"y = {a/10:.4f}x + {b/10:.4f}"
     )
-<<<<<<< HEAD
-
-    # Reference line at 0 (difference baseline)
-    plt.axhline(0, color="red", linestyle="--", linewidth=1)
-
-=======
->>>>>>> ddd8fce0b8a98d5bbdb22fcc8efc8df789a53daf
     # Fix axis limits
     plt.xlim(-0.5, len(num_rules_f) - 0.5)
     plt.ylim(0, )
@@ -212,11 +205,7 @@ for app in ["sample-app"]:
     ax.yaxis.label.set_fontsize(15 * SIZE_RATION)
     ax.xaxis.label.set_fontsize(15 * SIZE_RATION)
     ax.tick_params(labelsize=12 * SIZE_RATION)
-<<<<<<< HEAD
-    ax.yaxis.set_label_coords(-.05, 0.43)
-=======
     ax.yaxis.set_label_coords(-.07, 0.43)
->>>>>>> ddd8fce0b8a98d5bbdb22fcc8efc8df789a53daf
 
     plt.tight_layout()
     plt.legend(fontsize=12 * SIZE_RATION)

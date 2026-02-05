@@ -41,7 +41,7 @@ functions:
             - action: drop
               expression: |
                 (
-                  .REQUEST.HEADERS["content-type"] // []
+                  .REQUEST.HEADERS["Content-Type"] // []
                   | any(
                       ascii_downcase
                       | startswith("application/json")
@@ -52,7 +52,7 @@ functions:
             - action: drop
               expression: |
                   .REQUEST.HEADERS
-                  | has("authorization")
+                  | has("Authorization")
 
             # 1. Required fields must exist
             - action: drop
@@ -149,7 +149,7 @@ functions:
             - action: drop
               expression: |
                 (
-                  .REQUEST.HEADERS["content-type"] // []
+                  .REQUEST.HEADERS["Content-Type"] // []
                   | any(
                       ascii_downcase
                       | startswith("application/json")
@@ -161,20 +161,20 @@ functions:
             - action: drop
               expression: |
                   (.REQUEST.HEADERS
-                  | has("authorization")
+                  | has("Authorization")
                   | not)
 
             # 6. Authorization header must be Bearer token format
             - action: drop
               expression: |
-                  (.REQUEST.HEADERS["authorization"]
+                  (.REQUEST.HEADERS["Authorization"]
                   | test("^Bearer ")
                   | not)
 
             # 7. Token must be present and non-empty
             - action: drop
               expression: |
-                  (.REQUEST.HEADERS["authorization"]
+                  (.REQUEST.HEADERS["Authorization"]
                   | split(" ")
                   | .[1]
                   | length == 0)
@@ -182,7 +182,7 @@ functions:
             # 8. Control characters / binary payloads in token
             - action: drop
               expression: |
-                  (.REQUEST.HEADERS["authorization"]
+                  (.REQUEST.HEADERS["Authorization"]
                   | split(" ")
                   | .[1]
                   | test("[\x00-\x08\x0B\x0C\x0E-\x1F]"))
@@ -190,7 +190,7 @@ functions:
             # 9. SQL injection detection in token
             - action: drop
               expression: |
-                  (.REQUEST.HEADERS["authorization"]
+                  (.REQUEST.HEADERS["Authorization"]
                   | split(" ")
                   | .[1]
                   | test("(?i)(union\\s+select|select\\s+.*from|or\\s+1=1|--|;|/\\*)"))
@@ -198,7 +198,7 @@ functions:
             # 10. Template / code injection detection in token
             - action: drop
               expression: |
-                  (.REQUEST.HEADERS["authorization"]
+                  (.REQUEST.HEADERS["Authorization"]
                   | split(" ")
                   | .[1]
                   | test("{{|}}|{%-|-%}|__class__|__mro__|__subclasses__"))
@@ -255,7 +255,7 @@ functions:
             - action: drop
               expression: |
                 (
-                  .REQUEST.HEADERS["content-type"] // []
+                  .REQUEST.HEADERS["Content-Type"] // []
                   | any(
                       ascii_downcase
                       | startswith("application/json")
@@ -346,7 +346,7 @@ functions:
             - action: drop
               expression: |
                 (
-                  .REQUEST.HEADERS["content-type"] // []
+                  .REQUEST.HEADERS["Content-Type"] // []
                   | any(
                       ascii_downcase
                       | startswith("application/json")
@@ -435,7 +435,7 @@ functions:
                   | ascii_upcase
                   | . == "POST") and
                   (
-                    .REQUEST.HEADERS["content-type"] // []
+                    .REQUEST.HEADERS["Content-Type"] // []
                     | any(
                         ascii_downcase
                         | startswith("application/json")
