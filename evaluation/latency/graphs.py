@@ -20,6 +20,9 @@ FUNC_RE = re.compile(r"pod_([a-zA-Z0-9\-]+)-\d{5}-deployment")
 # Regex to extract latency: "latency": "0.053133726s"
 LAT_RE = re.compile(r'"latency":\s*"([0-9.]+)s"')
 
+# Regex to extract jq processing time: "Total jq processing time: 533.396µs"
+JQ_RE = re.compile(r'Total jq processing time:\s*([0-9.]+)(µ|m)s')
+
 EXPECTED_ENTRIES = 550
 
 
@@ -32,12 +35,24 @@ def extract_function_name(filename):
 
 def extract_latencies_from_file(filepath):
     latencies = []
+    jq_times = []
     with open(filepath, "r") as f:
         for line in f:
             match = LAT_RE.search(line)
             if match:
                 latencies.append(float(match.group(1)) * 1000)  # milliseconds
-    return latencies
+            
+            # Extract jq processing times
+            jq_match = JQ_RE.search(line)
+            if jq_match:
+                value = float(jq_match.group(1))
+                unit = jq_match.group(2)
+                # Convert to milliseconds
+                if unit == 'µ':  # microseconds
+                    value = value / 1000
+                # else: already in milliseconds
+                jq_times.append(value)
+    return latencies, jq_times
 
 
 records = []
@@ -73,8 +88,8 @@ for root, dirs, files in os.walk(BASE_DIR):
         # Extract function name
         func = extract_function_name(file)
 
-        # Extract latencies
-        latencies = extract_latencies_from_file(filepath)
+        # Extract latencies and jq times
+        latencies, jq_times = extract_latencies_from_file(filepath)
 
         # Validate count
         if len(latencies) != EXPECTED_ENTRIES:
@@ -88,9 +103,12 @@ for root, dirs, files in os.walk(BASE_DIR):
             "function": func,
             "mode": mode,
             "latencies": latencies,
+            "jq_times": jq_times,
             "num_rules": num_rules,
             "mean": pd.Series(latencies).mean(),
-            "std": pd.Series(latencies).std()
+            "std": pd.Series(latencies).std(),
+            "jq_mean": pd.Series(jq_times).mean() if jq_times else 0,
+            "jq_std": pd.Series(jq_times).std() if jq_times else 0
         })
 
 df = pd.DataFrame(records)
@@ -158,20 +176,20 @@ for app in ["sample-app"]:
         .rename(columns={"num_rules_enforce": "num_rules"})
     )
 
-    # --------------------------------------------------
-    # 6. Plot
-    # --------------------------------------------------
-    plt.figure(figsize=SIZE)
-    ax = sns.pointplot(
-        data=paired_df,
-        x="num_rules_enforce",
-        y="difference",
-        errorbar="sd",
-        join=False,
-        color=sns.color_palette("colorblind")[0],
-        label="Mean difference ± std",
-        capsize=.4
-    )
+    # # --------------------------------------------------
+    # # 6. Plot
+    # # --------------------------------------------------
+    # plt.figure(figsize=SIZE)
+    # ax = sns.pointplot(
+    #     data=paired_df,
+    #     x="num_rules_enforce",
+    #     y="difference",
+    #     errorbar="sd",
+    #     join=False,
+    #     color=sns.color_palette("colorblind")[0],
+    #     label="Mean difference ± std",
+    #     capsize=.4
+    # )
 
     # ---- ADD BEST-FIT LINE ----
     # Compute mean per num_rules for fitting
@@ -185,28 +203,133 @@ for app in ["sample-app"]:
     a, b = np.polyfit(x_arr, y_arr, 1)
     x_fit = np.linspace(x_arr.min(), x_arr.max(), 200)
     y_fit = a * x_fit + b
-
+ 
+    # sns.lineplot(
+    #     x=x_fit,
+    #     y=y_fit,
+    #     color=sns.color_palette("colorblind")[1],
+    #     linewidth=2,
+    #     label=f"y = {a/10:.4f}x + {b/10:.4f}"
+    # )
+    # # Fix axis limits
+    # plt.xlim(-0.5, len(num_rules_f) - 0.5)
+    # plt.ylim(0, )
+    # plt.xticks([i for i in x_arr if not (i)%5])
+ 
+    # plt.xticks(rotation=45)
+    # plt.xlabel("Number of Rules")
+    # plt.ylabel("Latency Difference\n(ms)")
+ 
+    # ax.yaxis.label.set_fontsize(15 * SIZE_RATION)
+    # ax.xaxis.label.set_fontsize(15 * SIZE_RATION)
+    # ax.tick_params(labelsize=12 * SIZE_RATION)
+    # ax.yaxis.set_label_coords(-.07, 0.43)
+ 
+    # Plot difference on primary y-axis
+    ax = sns.pointplot(
+        data=paired_df,
+        x="num_rules_enforce",
+        y="difference",
+        errorbar="sd",
+        join=False,
+        color=sns.color_palette("colorblind")[0],
+        label="Mean latency difference ± std",
+        capsize=.4,
+    )
+    
+    # ---- ADD BEST-FIT LINE FOR DIFFERENCE ----
+    a, b = np.polyfit(x_arr, y_arr, 1)
+    x_fit = np.linspace(x_arr.min(), x_arr.max(), 200)
+    y_fit = a * x_fit + b
+    
     sns.lineplot(
         x=x_fit,
         y=y_fit,
         color=sns.color_palette("colorblind")[1],
         linewidth=2,
-        label=f"y = {a/10:.4f}x + {b/10:.4f}"
+        label=f"y = {a/10:.4f}x + {b/10:.4f}",
     )
+
+    # Filter enforce mode records with jq times
+    enforce_jq_df = df[(df["app"] == app) & (df["mode"] == "enforce") & (df["jq_times"].apply(len) > 0)]
+    
+    jq_agg_df = None
+    if not enforce_jq_df.empty:
+        # Create DataFrame for jq processing times
+        jq_records = []
+        for _, row in enforce_jq_df.iterrows():
+            for jq_time in row["jq_times"]:
+                jq_records.append({
+                    "num_rules": row["num_rules"],
+                    "jq_time": jq_time
+                })
+        
+        jq_df = pd.DataFrame(jq_records)
+        
+        # Plot JQ processing times on secondary y-axis
+        sns.pointplot(
+            data=jq_df,
+            x="num_rules",
+            y="jq_time",
+            errorbar="sd",
+            join=False,
+            color=sns.color_palette("colorblind")[2],
+            label="Mean gojq time ± std",
+            capsize=.4,
+        )
+        
+        # Aggregate mean ± std per rule count for best-fit line
+        jq_agg_df = (
+            jq_df
+            .groupby("num_rules")["jq_time"]
+            .agg(["mean", "std"])
+            .reset_index()
+        )
+        
+        # Add best-fit line for jq times
+        num_rules_jq = sorted(jq_agg_df["num_rules"].unique())
+        x_arr_jq = pd.array(list(range(len(num_rules_jq)))) + 1
+        y_arr_jq = jq_agg_df.set_index("num_rules").loc[num_rules_jq, "mean"].values
+        
+        a_jq, b_jq = np.polyfit(x_arr_jq, y_arr_jq, 1)
+        x_fit_jq = np.linspace(x_arr_jq.min(), x_arr_jq.max(), 200)
+        y_fit_jq = a_jq * x_fit_jq + b_jq
+        
+        sns.lineplot(
+            x=x_fit_jq,
+            y=y_fit_jq,
+            color=sns.color_palette("colorblind")[3],
+            linewidth=2,
+            label=f"y = {a_jq/10:.4f}x + {b_jq/10:.4f}",
+        )
+    
     # Fix axis limits
     plt.xlim(-0.5, len(num_rules_f) - 0.5)
     plt.ylim(0, )
     plt.xticks([i for i in x_arr if not (i)%5])
-
+    
     plt.xticks(rotation=45)
     plt.xlabel("Number of Rules")
-    plt.ylabel("Latency Difference\n(ms)")
+    plt.ylabel("Time (ms)")
 
     ax.yaxis.label.set_fontsize(15 * SIZE_RATION)
     ax.xaxis.label.set_fontsize(15 * SIZE_RATION)
     ax.tick_params(labelsize=12 * SIZE_RATION)
     ax.yaxis.set_label_coords(-.07, 0.43)
-
+    
+    # Combine legends from both axes
+    # lines1, labels1 = ax1.get_legend_handles_labels()
+    # ax1.legend(fontsize=12 * SIZE_RATION, loc='upper left')
+    # ax2.legend(fontsize=12 * SIZE_RATION, loc='lower right')
+    # lines2, labels2 = ax2.get_legend_handles_labels() if not enforce_jq_df.empty else ([], [])
+    
+    # # Debug: Print legend contents to understand what's being created
+    # print(f"DEBUG: ax1 legend handles: {len(lines1)}, labels: {labels1}")
+    # print(f"DEBUG: ax2 legend handles: {len(lines2)}, labels: {labels2}")
+    # print(f"DEBUG: Combined legend labels: {labels1 + labels2}")
+    
+    # ax1.legend(lines1 + lines2, labels1 + labels2, fontsize=12 * SIZE_RATION, loc='upper left')
+    
     plt.tight_layout()
     plt.legend(fontsize=12 * SIZE_RATION)
     plt.savefig(f"{app}.pdf", bbox_inches='tight')
@@ -214,3 +337,7 @@ for app in ["sample-app"]:
 
     print(f"\n=== difference Summary (difference) for {app} ===\n")
     print(difference_df)
+    
+    if not enforce_jq_df.empty and 'jq_agg_df' in locals():
+        print(f"\n=== JQ Processing Time Summary for {app} ===\n")
+        print(jq_agg_df)
