@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
-	"github.com/itchyny/gojq"
 	pi "knative.dev/security-guard/pkg/pluginterfaces"
 )
 
-
 func evaluateRules(dir Direction, ctx interface{}) (Action, error) {
+	var totalJQTime time.Duration
 
 	// If the user did not specified rules for a specific direction, the requests must be accepted
 	if dir.Rules == nil {
@@ -21,9 +21,10 @@ func evaluateRules(dir Direction, ctx interface{}) (Action, error) {
 		rule := &dir.Rules[i]
 
 		pi.Log.Debugf("Checking rule expression: %s", rule.Expression)
-		// fmt.Printf("Checking rule expression: %s\n", rule.Expression)
 
+		start := time.Now()
 		match, err := evaluateRule(rule, ctx)
+		totalJQTime += time.Since(start)
 		if err != nil {
 			return "", fmt.Errorf("rules[%d]: %w", i, err)
 		}
@@ -38,25 +39,21 @@ func evaluateRules(dir Direction, ctx interface{}) (Action, error) {
 			continue // non-terminal
 
 		case ActionAccept, ActionDrop, ActionReject:
-			return rule.Action, nil
+			return rule.Action, nil // immediate return on terminal action
 		}
 	}
 
+	fmt.Printf("Total jq processing time: %v\n", totalJQTime)
 	return dir.DefaultAction, nil
 }
-
 
 func evaluateRule(rule *Rule, ctx interface{}) (bool, error) {
 	if strings.TrimSpace(rule.Expression) == "" {
 		return false, fmt.Errorf("missing jq expression")
 	}
 
-	query, err := gojq.Parse(rule.Expression)
-	if err != nil {
-		return false, fmt.Errorf("invalid jq expression: %w", err)
-	}
-
-	iter := query.Run(ctx)
+	// Use the pre-parsed query from the rule
+	iter := rule.CompiledQuery.Run(ctx)
 
 	var (
 		result    bool
@@ -92,7 +89,6 @@ func evaluateRule(rule *Rule, ctx interface{}) (bool, error) {
 
 	return result, nil
 }
-
 
 func logRuleHit(rule *Rule, ctx interface{}) {
 	ctxJSON, err := json.Marshal(ctx)

@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+
 	// "runtime"
 	// "runtime/debug"
 	"strconv"
@@ -26,16 +27,15 @@ var annotationsFilePath = sharedmain.PodInfoAnnotationsPath
 var qpOptionPrefix = "qpoption.knative.dev/"
 
 type plug struct {
-	name    		string
-	version 		string
+	name    string
+	version string
 
-	RequestRules	Direction
-	ResponseRules	Direction
+	RequestRules  Direction
+	ResponseRules Direction
 }
 
 var errRequest error = errors.New("Request blocked by firewall")
 var errResponse error = errors.New("Response blocked by firewall")
-
 
 func (p *plug) ApproveRequest(req *http.Request) (*http.Request, error) {
 	restore := func(b []byte) {
@@ -45,16 +45,16 @@ func (p *plug) ApproveRequest(req *http.Request) (*http.Request, error) {
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	var reqCtx RequestContext
+	var reqCtx map[string]interface{}
 
 	action, err := evaluateJSONFirewall(
 		req.Body,
 		restore,
 		p.RequestRules,
 		"ApproveRequest",
-		func(body interface{}) FirewallContext {
+		func(body interface{}) map[string]interface{} {
 			reqCtx = buildRequestContext(req, body)
-			return FirewallContext{
+			return map[string]interface{}{
 				"REQUEST": reqCtx,
 			}
 		},
@@ -85,9 +85,9 @@ func (p *plug) ApproveResponse(req *http.Request, resp *http.Response) (*http.Re
 	}
 
 	// Load request context
-	var reqCtx RequestContext
+	var reqCtx map[string]interface{}
 	if v := req.Context().Value(firewallCtxKey{}); v != nil {
-		reqCtx, _ = v.(RequestContext)
+		reqCtx, _ = v.(map[string]interface{})
 	}
 
 	action, err := evaluateJSONFirewall(
@@ -95,8 +95,8 @@ func (p *plug) ApproveResponse(req *http.Request, resp *http.Response) (*http.Re
 		restore,
 		p.ResponseRules,
 		"ApproveResponse",
-		func(body interface{}) FirewallContext {
-			return FirewallContext{
+		func(body interface{}) map[string]interface{} {
+			return map[string]interface{}{
 				"REQUEST":  reqCtx,
 				"RESPONSE": buildResponseContext(resp, body),
 			}
@@ -120,7 +120,7 @@ func evaluateJSONFirewall(
 	restore func([]byte),
 	rules Direction,
 	logPrefix string,
-	contextBuilder func(body interface{}) FirewallContext,
+	contextBuilder func(body interface{}) map[string]interface{},
 ) (Action, error) {
 	bodyBytes, err := io.ReadAll(bodyReader)
 	if err != nil {
@@ -130,9 +130,13 @@ func evaluateJSONFirewall(
 
 	defer restore(bodyBytes)
 
+	// Performance optimization: Only parse JSON if body is not empty
 	var body interface{}
 	if len(bodyBytes) > 0 {
-		if err := json.Unmarshal(bodyBytes, &body); err != nil {
+		// Performance optimization: Use json.Decoder for streaming parsing
+		decoder := json.NewDecoder(bytes.NewReader(bodyBytes))
+		decoder.UseNumber() // Preserve number types for jq compatibility
+		if err := decoder.Decode(&body); err != nil {
 			return "", fmt.Errorf("%s: invalid JSON body: %w", logPrefix, err)
 		}
 	} else {
@@ -141,12 +145,7 @@ func evaluateJSONFirewall(
 
 	ctx := contextBuilder(body)
 
-	jqCtx, err := toJQContext(ctx)
-	if err != nil {
-		return "", fmt.Errorf("%s: failed to build jq context: %w", logPrefix, err)
-	}
-
-	action, err := evaluateRules(rules, jqCtx)
+	action, err := evaluateRules(rules, ctx)
 	if err != nil {
 		return "", fmt.Errorf("%s: rule evaluation error: %w", logPrefix, err)
 	}
@@ -154,31 +153,17 @@ func evaluateJSONFirewall(
 	return action, nil
 }
 
-func toJQContext(v any) (interface{}, error) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-
-	var m interface{}
-	if err := json.Unmarshal(b, &m); err != nil {
-		return nil, err
-	}
-
-	return m, nil
-}
-
 func applyAction(action Action, err error) error {
 	switch action {
-		case ActionAccept:
-			return nil
-		// TODO -> IN THE FUTURE, THE BEHAVIOR OF DROP MUST BE CHANGED TO A REAL DROP (SILENT REJECT). HOWEVER, THIS NEEDS DEEPER MODIFICATIONS IN THE QUEUE-PROXY ITSELF AND PROBABLY IN THE SECURITY GUARD EXTENSION
-		case ActionDrop:
-			return err
-		case ActionReject:
-			return err
-		default:
-			return fmt.Errorf("unknown action: %s", action)
+	case ActionAccept:
+		return nil
+	// TODO -> IN THE FUTURE, THE BEHAVIOR OF DROP MUST BE CHANGED TO A REAL DROP (SILENT REJECT). HOWEVER, THIS NEEDS DEEPER MODIFICATIONS IN THE QUEUE-PROXY ITSELF AND PROBABLY IN THE SECURITY GUARD EXTENSION
+	case ActionDrop:
+		return err
+	case ActionReject:
+		return err
+	default:
+		return fmt.Errorf("unknown action: %s", action)
 	}
 }
 
@@ -315,10 +300,6 @@ func init() {
 	} else {
 		pi.Log.Debugf("Response rules structure:\n%s\n", string(prettyResponse))
 	}
-
-	pi.Log.Debugf("Running garbage collector")
-	runtime.GC()
-	pi.Log.Debugf("Garbage collector run")
 
 	pi.RegisterPlug(p)
 }
