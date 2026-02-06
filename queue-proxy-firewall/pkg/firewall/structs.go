@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/itchyny/gojq"
-	pi "knative.dev/security-guard/pkg/pluginterfaces"
 )
 
 
@@ -76,7 +75,6 @@ func (r *Rule) Validate() error {
 
 	// Save the compiled query for later usage
 	r.CompiledQuery = code
-	pi.Log.Debugf("Compiled query")
 
 	// Schema validation (if present)
 	if r.Schema != nil {

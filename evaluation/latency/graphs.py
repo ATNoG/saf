@@ -5,6 +5,7 @@ from typing import Literal
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import seaborn as sns
 
 COMPARISON = 6.5
@@ -179,17 +180,6 @@ for app in ["sample-app"]:
     # # --------------------------------------------------
     # # 6. Plot
     # # --------------------------------------------------
-    # plt.figure(figsize=SIZE)
-    # ax = sns.pointplot(
-    #     data=paired_df,
-    #     x="num_rules_enforce",
-    #     y="difference",
-    #     errorbar="sd",
-    #     join=False,
-    #     color=sns.color_palette("colorblind")[0],
-    #     label="Mean difference ± std",
-    #     capsize=.4
-    # )
 
     # ---- ADD BEST-FIT LINE ----
     # Compute mean per num_rules for fitting
@@ -203,29 +193,9 @@ for app in ["sample-app"]:
     a, b = np.polyfit(x_arr, y_arr, 1)
     x_fit = np.linspace(x_arr.min(), x_arr.max(), 200)
     y_fit = a * x_fit + b
- 
-    # sns.lineplot(
-    #     x=x_fit,
-    #     y=y_fit,
-    #     color=sns.color_palette("colorblind")[1],
-    #     linewidth=2,
-    #     label=f"y = {a/10:.4f}x + {b/10:.4f}"
-    # )
-    # # Fix axis limits
-    # plt.xlim(-0.5, len(num_rules_f) - 0.5)
-    # plt.ylim(0, )
-    # plt.xticks([i for i in x_arr if not (i)%5])
- 
-    # plt.xticks(rotation=45)
-    # plt.xlabel("Number of Rules")
-    # plt.ylabel("Latency Difference\n(ms)")
- 
-    # ax.yaxis.label.set_fontsize(15 * SIZE_RATION)
-    # ax.xaxis.label.set_fontsize(15 * SIZE_RATION)
-    # ax.tick_params(labelsize=12 * SIZE_RATION)
-    # ax.yaxis.set_label_coords(-.07, 0.43)
- 
+
     # Plot difference on primary y-axis
+    plt.figure(figsize=SIZE)
     ax = sns.pointplot(
         data=paired_df,
         x="num_rules_enforce",
@@ -235,6 +205,7 @@ for app in ["sample-app"]:
         color=sns.color_palette("colorblind")[0],
         label="Mean latency difference ± std",
         capsize=.4,
+        legend=False,
     )
     
     # ---- ADD BEST-FIT LINE FOR DIFFERENCE ----
@@ -242,12 +213,35 @@ for app in ["sample-app"]:
     x_fit = np.linspace(x_arr.min(), x_arr.max(), 200)
     y_fit = a * x_fit + b
     
-    sns.lineplot(
+    diff_fit_line = sns.lineplot(
         x=x_fit,
         y=y_fit,
         color=sns.color_palette("colorblind")[1],
         linewidth=2,
         label=f"y = {a/10:.4f}x + {b/10:.4f}",
+        legend=False
+    )
+
+    ax = plt.gca()
+
+    # -------- Legend 1: latency difference --------
+    diff_handles = [
+        Line2D([0], [0],
+            marker='o',
+            linestyle='None',
+            color=sns.color_palette("colorblind")[0],
+            label="Mean latency difference ± std"),
+        Line2D([0], [0],
+            linestyle='-',
+            linewidth=2,
+            color=sns.color_palette("colorblind")[1],
+            label=f"y = {a/10:.4f}x + {b/10:.4f}")
+    ]
+
+    legend_diff = ax.legend(
+        handles=diff_handles,
+        loc="upper left",
+        fontsize=12 * SIZE_RATION,
     )
 
     # Filter enforce mode records with jq times
@@ -267,7 +261,7 @@ for app in ["sample-app"]:
         jq_df = pd.DataFrame(jq_records)
         
         # Plot JQ processing times on secondary y-axis
-        sns.pointplot(
+        jq_point = sns.pointplot(
             data=jq_df,
             x="num_rules",
             y="jq_time",
@@ -276,10 +270,12 @@ for app in ["sample-app"]:
             color=sns.color_palette("colorblind")[2],
             label="Mean gojq time ± std",
             capsize=.4,
+            legend=False,
         )
         
         # Aggregate mean ± std per rule count for best-fit line
-        jq_agg_df = (
+        
+        jq_fit_line = jq_agg_df = (
             jq_df
             .groupby("num_rules")["jq_time"]
             .agg(["mean", "std"])
@@ -301,8 +297,33 @@ for app in ["sample-app"]:
             color=sns.color_palette("colorblind")[3],
             linewidth=2,
             label=f"y = {a_jq/10:.4f}x + {b_jq/10:.4f}",
+            legend=False,
         )
-    
+
+        # -------- Legend 2: gojq --------
+        jq_handles = [
+            Line2D([0], [0],
+                marker='o',
+                linestyle='None',
+                color=sns.color_palette("colorblind")[2],
+                label="Mean gojq time ± std"),
+            Line2D([0], [0],
+                linestyle='-',
+                linewidth=2,
+                color=sns.color_palette("colorblind")[3],
+                label=f"y = {a_jq/10:.4f}x + {b_jq/10:.4f}")
+        ]
+
+        legend_jq = ax.legend(
+            handles=jq_handles,
+            loc="lower right",
+            fontsize=12 * SIZE_RATION,
+        )
+
+    # Keep both legends
+    ax.add_artist(legend_diff)
+
+        
     # Fix axis limits
     plt.xlim(-0.5, len(num_rules_f) - 0.5)
     plt.ylim(0, )
@@ -315,23 +336,9 @@ for app in ["sample-app"]:
     ax.yaxis.label.set_fontsize(15 * SIZE_RATION)
     ax.xaxis.label.set_fontsize(15 * SIZE_RATION)
     ax.tick_params(labelsize=12 * SIZE_RATION)
-    ax.yaxis.set_label_coords(-.07, 0.43)
-    
-    # Combine legends from both axes
-    # lines1, labels1 = ax1.get_legend_handles_labels()
-    # ax1.legend(fontsize=12 * SIZE_RATION, loc='upper left')
-    # ax2.legend(fontsize=12 * SIZE_RATION, loc='lower right')
-    # lines2, labels2 = ax2.get_legend_handles_labels() if not enforce_jq_df.empty else ([], [])
-    
-    # # Debug: Print legend contents to understand what's being created
-    # print(f"DEBUG: ax1 legend handles: {len(lines1)}, labels: {labels1}")
-    # print(f"DEBUG: ax2 legend handles: {len(lines2)}, labels: {labels2}")
-    # print(f"DEBUG: Combined legend labels: {labels1 + labels2}")
-    
-    # ax1.legend(lines1 + lines2, labels1 + labels2, fontsize=12 * SIZE_RATION, loc='upper left')
-    
+
     plt.tight_layout()
-    plt.legend(fontsize=12 * SIZE_RATION)
+    # plt.legend(fontsize=12 * SIZE_RATION)
     plt.savefig(f"{app}.pdf", bbox_inches='tight')
     plt.show()
 
