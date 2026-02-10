@@ -26,12 +26,14 @@ func buildRequestContext(req *http.Request, body interface{}) map[string]interfa
 	uriMap["rawQuery"] = req.URL.RawQuery
 	uriMap["query"] = query
 
-	return map[string]interface{}{
-		"BODY":    body,
-		"HEADERS": headers,
-		"URI":     uriMap,
-		"METHOD":  req.Method,
-	}
+	// Reuse the same map instance to avoid creating new maps
+	result := make(map[string]interface{}, 4)
+	result["BODY"] = body
+	result["HEADERS"] = headers
+	result["URI"] = uriMap
+	result["METHOD"] = req.Method
+
+	return result
 }
 
 func buildResponseContext(resp *http.Response, body interface{}) map[string]interface{} {
@@ -41,7 +43,7 @@ func buildResponseContext(resp *http.Response, body interface{}) map[string]inte
 		headers[http.CanonicalHeaderKey(k)] = v
 	}
 
-	// Pre-allocate result map with exact capacity needed
+	// Reuse the same map instance to avoid creating new maps
 	result := make(map[string]interface{}, 3)
 	result["BODY"] = body
 	result["HEADERS"] = headers

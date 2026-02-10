@@ -9,7 +9,7 @@ from matplotlib.lines import Line2D
 import seaborn as sns
 
 COMPARISON = 6.5
-SIZE: tuple[Literal[5], Literal[1]] = (10, 4.1)
+SIZE: tuple[Literal[5], Literal[1]] = (10, 3.5)
 # SIZE: tuple[Literal[5], Literal[1]] = (10, 5)
 SIZE_RATION = SIZE[0] / COMPARISON
 
@@ -242,6 +242,7 @@ for app in ["sample-app"]:
         handles=diff_handles,
         loc="upper left",
         fontsize=12 * SIZE_RATION,
+        bbox_to_anchor=(-0.015, 1.055),
     )
 
     # Filter enforce mode records with jq times
@@ -318,16 +319,18 @@ for app in ["sample-app"]:
             handles=jq_handles,
             loc="lower right",
             fontsize=12 * SIZE_RATION,
+            bbox_to_anchor=(1.015, -.05),
         )
 
     # Keep both legends
     ax.add_artist(legend_diff)
 
-        
+
     # Fix axis limits
     plt.xlim(-0.5, len(num_rules_f) - 0.5)
     plt.ylim(0, )
     plt.xticks([i for i in x_arr if not (i)%5])
+    plt.yticks([i for i in range(0, 31, 10)])
     
     plt.xticks(rotation=45)
     plt.xlabel("Number of Rules")

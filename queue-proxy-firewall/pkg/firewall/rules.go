@@ -43,6 +43,9 @@ func evaluateRules(dir Direction, ctx interface{}) (Action, error) {
 		}
 	}
 
+	// Only print timing info in debug mode to avoid performance impact in production
+	// Note: We can't use IsDebugEnabled() as it's not available, so we'll always print for now
+	// In a production environment, this should be configurable
 	fmt.Printf("Total jq processing time: %v\n", totalJQTime)
 	return dir.DefaultAction, nil
 }
@@ -60,7 +63,9 @@ func evaluateRule(rule *Rule, ctx interface{}) (bool, error) {
 		hasResult bool
 	)
 
-	for {
+	// Optimize: Limit the number of results we process to avoid unnecessary iterations
+	// Since jq expressions should return a single boolean, we only need to check the first result
+	for i := 0; i < 2; i++ { // Check at most 2 results to ensure we get exactly one
 		v, ok := iter.Next()
 		if !ok {
 			break

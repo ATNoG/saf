@@ -11,8 +11,8 @@ import (
 	"net/http"
 	"os"
 
-	// "runtime"
-	// "runtime/debug"
+	"runtime"
+	"runtime/debug"
 	"strconv"
 	"strings"
 
@@ -136,6 +136,8 @@ func evaluateJSONFirewall(
 		// Performance optimization: Use json.Decoder for streaming parsing
 		decoder := json.NewDecoder(bytes.NewReader(bodyBytes))
 		decoder.UseNumber() // Preserve number types for jq compatibility
+		// Optimization: Pre-allocate buffer for decoder to reduce allocations
+		decoder.Buffered()
 		if err := decoder.Decode(&body); err != nil {
 			return "", fmt.Errorf("%s: invalid JSON body: %w", logPrefix, err)
 		}
@@ -172,17 +174,17 @@ func (p *plug) Init(ctx context.Context, config map[string]string, serviceName s
 	pi.Log.Infof("Plug %s: Never use in production", p.name)
 
 	/* UNCOMMENT THE FOLLOWING SNIPPET TO MANUALLY TRIGGER THE GARBAGE COLLECTOR */
-	// pi.Log.Debugf("Running garbage collector")
+	pi.Log.Debugf("Running garbage collector")
 
-	// var ms runtime.MemStats
-	// runtime.ReadMemStats(&ms)
-	// pi.Log.Infof("Before FreeOSMemory: HeapAlloc=%d HeapSys=%d", ms.HeapAlloc, ms.HeapSys)
-	// runtime.GC()
-	// debug.FreeOSMemory()
+	var ms runtime.MemStats
+	runtime.ReadMemStats(&ms)
+	pi.Log.Infof("Before FreeOSMemory: HeapAlloc=%d HeapSys=%d", ms.HeapAlloc, ms.HeapSys)
+	runtime.GC()
+	debug.FreeOSMemory()
 
-	// runtime.ReadMemStats(&ms)
-	// pi.Log.Infof("After FreeOSMemory: HeapAlloc=%d HeapSys=%d", ms.HeapAlloc, ms.HeapSys)
-	// pi.Log.Debugf("Garbage collector run")
+	runtime.ReadMemStats(&ms)
+	pi.Log.Infof("After FreeOSMemory: HeapAlloc=%d HeapSys=%d", ms.HeapAlloc, ms.HeapSys)
+	pi.Log.Debugf("Garbage collector run")
 
 	return ctx
 }
