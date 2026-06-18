@@ -6,8 +6,8 @@
 ##########################
 SSH_PASSWORD="olaadeus"                     # SSH password for the Kubernetes cluster machines
 MACHINE_USER="ubuntu"                     # SSH user (assumed to have sudo privileges for reboot)
-EXTERNAL_IP="10.255.30.152"
-MACHINES=("10.255.30.152" "10.255.30.196" "10.255.30.244")  # IPs of the 3 Kubernetes machines and the code-gen
+EXTERNAL_IP="10.255.30.158"
+MACHINES=("10.255.30.158" "10.255.30.236")  # IPs of the Kubernetes machines
 WAIT_PERIOD=1                                    # Seconds to wait between each request
 NAMESPACES=("sample-app")
 WAIT_REBOOT=300                                  # Seconds to wait after rebooting the cluster machines
@@ -94,8 +94,8 @@ for test in ${TESTS[@]}; do
             ##########################
             # 1. REBOOT CLUSTER MACHINES AND WAIT FOR CLUSTER TO BE READY
             ##########################
-            reboot_machines
-            wait_for_cluster
+            # reboot_machines
+            # wait_for_cluster
 
             if [[ $num_rules -eq 0 ]]; then
                 yq -i '
