@@ -14,7 +14,7 @@ TMPDIR="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR"' EXIT
 
 human_size() {
-  numfmt --to=iec --suffix=B "$1"
+  numfmt --to=si --suffix=B "$1"
 }
 
 export_rootfs() {
