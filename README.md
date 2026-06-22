@@ -11,6 +11,7 @@ A security extension for Knative Serving that provides firewall capabilities for
 - [Firewall Language](#firewall-language)
 - [CNCF Serverless Workflow Integration](#cncf-serverless-workflow-integration)
 - [Usage](#usage)
+- [Correctness Testing](#correctness-testing)
 - [Performance Evaluation](#performance-evaluation)
 - [Configuration Reference](#configuration-reference)
 - [Important Notes](#important-notes)
@@ -56,13 +57,15 @@ A dedicated language for defining firewall rules:
 
 ### 3. Evaluation Framework
 
-Performance testing and benchmarking tools:
+Correctness testing and performance benchmarking tools:
 
 - **Location**: [`evaluation/`](evaluation/)
-- **Purpose**: Measure firewall performance impact
+- **Purpose**: Validate enforcement behavior and measure firewall performance impact
 - **Components**:
+  - Enforcement-engine correctness tests
   - Invocation and teardown performance tests
   - Latency performance tests
+  - Container image size comparison
   - Data analysis and visualization tools
 
 ### 4. Sample Applications
@@ -271,6 +274,22 @@ response:
   - `BODY`: Parsed response body (JSON)
   - `STATUS`: HTTP status code
 
+## Correctness Testing
+
+The table-driven test in [`queue-proxy-firewall/pkg/firewall/rules_test.go`](queue-proxy-firewall/pkg/firewall/rules_test.go) checks the behavior of the enforcement engine independently of the quality of any particular security policy. It verifies that:
+
+- request and response rules produce the configured `accept`, `reject`, and `drop` actions;
+- the configured default action is returned when no rule matches;
+- rules are evaluated in order and evaluation stops at the first matching terminal action; and
+- malformed JSON is reported as an error, causing the request or response to be blocked rather than silently accepted, while preserving the original body.
+
+Run the test with:
+
+```bash
+cd queue-proxy-firewall
+go test ./pkg/firewall
+```
+
 ## Performance Evaluation
 
 The evaluation framework provides comprehensive performance testing:
@@ -285,7 +304,33 @@ cd evaluation/invocation
 # Latency performance tests (request/response processing)
 cd evaluation/latency
 ./test.sh
+
+# Container root-filesystem size comparison
+cd evaluation/container-size
+./compare.sh <baseline-image> <saf-image>
 ```
+
+### Container Size Test
+
+[`evaluation/container-size/compare.sh`](evaluation/container-size/compare.sh) compares the uncompressed root filesystems of two container images. For each image, it:
+
+1. pulls the image selected for the host's container platform;
+2. creates a stopped container;
+3. exports the container's merged root filesystem to a tar archive; and
+4. compares the archive sizes in bytes and reports their absolute difference.
+
+The test deliberately measures an exported root filesystem instead of Docker's local image-storage usage. Local storage figures can depend on the storage driver, layer cache, shared layers, and filesystem implementation. Exporting the merged filesystem removes those machine-local factors and measures the files that the container actually exposes.
+
+Consequently, the result is reproducible across machines using the same OS and CPU architecture, provided they resolve the same image contents. For reproducible published measurements, use immutable image digests rather than mutable tags; multi-platform tags can select different images on different architectures or operating systems.
+
+Example:
+
+```bash
+cd evaluation/container-size
+./compare.sh gcr.io/knative-releases/knative.dev/serving/cmd/queue:v1.22.1 ghcr.io/atnog/serverless-workflow-firewall/queue:latest
+```
+
+This value is the uncompressed runtime root-filesystem size. It is not the compressed registry download size and not the amount of local disk space consumed by Docker.
 
 ### Generating Graphs
 
